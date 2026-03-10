@@ -16,7 +16,7 @@
             padding: 20px;
         }
         .app-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         h1 {
@@ -36,6 +36,36 @@
             color: rgba(255,255,255,0.9);
             margin-bottom: 40px;
             font-size: 18px;
+        }
+        
+        /* Табы */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+        }
+        
+        .tab:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
         
         /* Основной контейнер */
@@ -61,6 +91,58 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+        
+        /* Ручное создание */
+        .manual-section {
+            display: block;
+        }
+        
+        .manual-section.hidden {
+            display: none;
+        }
+        
+        /* Импорт текста */
+        .import-section {
+            display: none;
+        }
+        
+        .import-section.active {
+            display: block;
+        }
+        
+        .import-textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        .import-textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        .import-example {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .import-example pre {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 10px;
         }
         
         .subject-selector {
@@ -264,6 +346,12 @@
             display: block;
         }
         
+        #qrCode img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
         .test-link-container {
             background: #667eea;
             color: white;
@@ -313,14 +401,20 @@
             border: 1px solid #e0e0e0;
         }
         
-        .test-item-link {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
+        .test-item-info {
             flex: 1;
-            margin-right: 10px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+        
+        .test-item-subject {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .test-item-date {
+            font-size: 12px;
+            color: #999;
+            margin-left: 10px;
         }
         
         .test-item-delete {
@@ -332,6 +426,12 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .test-item-delete:hover {
+            background: #ff5252;
+            transform: scale(1.1);
         }
         
         /* Стили для прохождения теста */
@@ -509,18 +609,60 @@
                     <span>🔨</span> Создание теста
                 </div>
                 
-                <div class="subject-selector">
-                    <div class="subject-label">Предмет:</div>
-                    <input type="text" id="subjectInput" class="subject-input" placeholder="Например: Математика, История, Физика" value="Математика">
+                <!-- Табы -->
+                <div class="tabs">
+                    <button class="tab active" id="manualTab">✍️ Ручное создание</button>
+                    <button class="tab" id="importTab">📄 Импорт текста</button>
                 </div>
                 
-                <div class="questions-container" id="questionsContainer">
-                    <!-- Вопросы будут добавляться сюда -->
+                <!-- Ручное создание -->
+                <div class="manual-section" id="manualSection">
+                    <div class="subject-selector">
+                        <div class="subject-label">Предмет:</div>
+                        <input type="text" id="subjectInput" class="subject-input" placeholder="Например: Математика, История, Физика" value="Математика">
+                    </div>
+                    
+                    <div class="questions-container" id="questionsContainer">
+                        <!-- Вопросы будут добавляться сюда -->
+                    </div>
+                    
+                    <button class="add-question-btn" id="addQuestionBtn">
+                        ➕ Добавить вопрос
+                    </button>
                 </div>
                 
-                <button class="add-question-btn" id="addQuestionBtn">
-                    ➕ Добавить вопрос
-                </button>
+                <!-- Импорт текста -->
+                <div class="import-section" id="importSection">
+                    <div class="subject-selector">
+                        <div class="subject-label">Предмет:</div>
+                        <input type="text" id="importSubjectInput" class="subject-input" placeholder="Например: Математика, История, Физика" value="Математика">
+                    </div>
+                    
+                    <div class="import-example">
+                        <strong>📋 Пример формата:</strong>
+                        <pre>
+Вопрос 1: Что такое фотосинтез?
+А) Процесс дыхания растений
+Б) Процесс питания растений
+В) Процесс размножения растений
+Г) Процесс роста растений
+Правильный ответ: Б
+
+Вопрос 2: Какой газ выделяют растения при фотосинтезе?
+А) Кислород
+Б) Углекислый газ
+В) Азот
+Г) Водород
+Правильный ответ: А
+                        </pre>
+                    </div>
+                    
+                    <textarea class="import-textarea" id="importText" placeholder="Вставьте текст теста сюда..."></textarea>
+                    
+                    <button class="add-question-btn" id="parseBtn">
+                        🔍 Разобрать текст
+                    </button>
+                </div>
                 
                 <button class="generate-btn" id="generateBtn" disabled>
                     🎯 Сформировать тест
@@ -571,6 +713,9 @@
             const addQuestionBtn = document.getElementById('addQuestionBtn');
             const generateBtn = document.getElementById('generateBtn');
             const subjectInput = document.getElementById('subjectInput');
+            const importSubjectInput = document.getElementById('importSubjectInput');
+            const importText = document.getElementById('importText');
+            const parseBtn = document.getElementById('parseBtn');
             const qrSection = document.getElementById('qrSection');
             const placeholderSection = document.getElementById('placeholderSection');
             const qrCode = document.getElementById('qrCode');
@@ -582,6 +727,27 @@
             const testProgress = document.getElementById('testProgress');
             const testContent = document.getElementById('testContent');
             const testList = document.getElementById('testList');
+            
+            // Табы
+            const manualTab = document.getElementById('manualTab');
+            const importTab = document.getElementById('importTab');
+            const manualSection = document.getElementById('manualSection');
+            const importSection = document.getElementById('importSection');
+
+            // Переключение табов
+            manualTab.addEventListener('click', () => {
+                manualTab.classList.add('active');
+                importTab.classList.remove('active');
+                manualSection.classList.remove('hidden');
+                importSection.classList.remove('active');
+            });
+
+            importTab.addEventListener('click', () => {
+                importTab.classList.add('active');
+                manualTab.classList.remove('active');
+                importSection.classList.add('active');
+                manualSection.classList.add('hidden');
+            });
 
             // Загрузка тестов из localStorage
             function loadTestList() {
@@ -598,18 +764,23 @@
                     }
                 }
                 
+                // Сортируем по дате (новые сверху)
+                tests.sort((a, b) => new Date(b.created) - new Date(a.created));
+                
                 if (tests.length === 0) {
                     testList.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Пока нет сохраненных тестов</div>';
                     return;
                 }
                 
                 testList.innerHTML = tests.map(test => {
-                    const baseUrl = window.location.href.split('#')[0].split('?')[0];
-                    const testUrl = `${baseUrl}?test=${test.id}`;
+                    const date = new Date(test.created).toLocaleString();
                     return `
                         <div class="test-item">
-                            <span style="font-weight: 600; margin-right: 10px;">${test.subject}</span>
-                            <span style="color: #666; font-size: 12px;">${new Date(test.created).toLocaleString()}</span>
+                            <div class="test-item-info" onclick="loadTest('${test.id}')">
+                                <span class="test-item-subject">${test.subject}</span>
+                                <span class="test-item-date">${date}</span>
+                                <span style="color: #666; font-size: 12px; margin-left: 10px;">(${test.questions.length} вопросов)</span>
+                            </div>
                             <button class="test-item-delete" onclick="deleteTest('${test.id}')">×</button>
                         </div>
                     `;
@@ -629,7 +800,29 @@
                 }
             };
 
-            // Добавление вопроса
+            // Загрузка теста для прохождения
+            window.loadTest = function(testId) {
+                const testData = JSON.parse(localStorage.getItem(`test_${testId}`));
+                
+                if (!testData) {
+                    alert('Тест не найден! Он мог быть удален.');
+                    return;
+                }
+                
+                currentTest = testData;
+                currentQuestionIndex = 0;
+                userAnswers = new Array(testData.questions.length).fill(null);
+                testCompleted = false;
+                
+                // Показываем страницу теста
+                mainMenu.style.display = 'none';
+                testPage.classList.add('active');
+                
+                // Отображаем тест
+                renderTest();
+            };
+
+            // Добавление вопроса (ручное)
             function addQuestion() {
                 const questionId = Date.now() + Math.random();
                 const questionCard = document.createElement('div');
@@ -722,9 +915,128 @@
                 generateBtn.disabled = !isValid || questions.length === 0;
             }
 
+            // Парсинг текста теста
+            function parseTestText(text) {
+                const lines = text.split('\n');
+                const parsedQuestions = [];
+                let currentQuestion = null;
+                
+                for (let line of lines) {
+                    line = line.trim();
+                    if (!line) continue;
+                    
+                    // Поиск вопроса
+                    if (line.toLowerCase().includes('вопрос')) {
+                        if (currentQuestion) {
+                            parsedQuestions.push(currentQuestion);
+                        }
+                        currentQuestion = {
+                            text: line.replace(/^[^:]*[:]\s*/, '').trim(),
+                            options: ['', '', '', ''],
+                            correct: null
+                        };
+                    }
+                    // Поиск вариантов ответа
+                    else if (line.match(/^[А-Г][\.)\s]/)) {
+                        const letter = line[0];
+                        const index = 'АБВГ'.indexOf(letter);
+                        if (index !== -1 && currentQuestion) {
+                            currentQuestion.options[index] = line.replace(/^[А-Г][\.)\s]*/, '').trim();
+                        }
+                    }
+                    // Поиск правильного ответа
+                    else if (line.toLowerCase().includes('правильный ответ')) {
+                        if (currentQuestion) {
+                            const match = line.match(/[А-Г]/);
+                            if (match) {
+                                currentQuestion.correct = 'АБВГ'.indexOf(match[0]);
+                            }
+                        }
+                    }
+                }
+                
+                if (currentQuestion) {
+                    parsedQuestions.push(currentQuestion);
+                }
+                
+                return parsedQuestions;
+            }
+
+            // Обработчик кнопки разбора текста
+            parseBtn.addEventListener('click', () => {
+                const text = importText.value.trim();
+                if (!text) {
+                    alert('Введите текст теста!');
+                    return;
+                }
+                
+                const parsedQuestions = parseTestText(text);
+                
+                if (parsedQuestions.length === 0) {
+                    alert('Не удалось разобрать текст. Проверьте формат.');
+                    return;
+                }
+                
+                // Очищаем существующие вопросы
+                questions = [];
+                questionsContainer.innerHTML = '';
+                
+                // Добавляем распарсенные вопросы
+                parsedQuestions.forEach((q, index) => {
+                    const questionId = Date.now() + Math.random() + index;
+                    const questionCard = document.createElement('div');
+                    questionCard.className = 'question-card';
+                    questionCard.dataset.id = questionId;
+                    
+                    questionCard.innerHTML = `
+                        <div class="question-header">
+                            <span class="question-number">Вопрос ${index + 1}</span>
+                            <button class="remove-question" onclick="removeQuestion(this)">×</button>
+                        </div>
+                        <textarea class="question-input" placeholder="Введите вопрос..." oninput="updateQuestion(this, 'text')">${q.text}</textarea>
+                        <div class="options-container">
+                            <input type="text" class="option-input" placeholder="Вариант А" value="${q.options[0]}" oninput="updateQuestion(this, 'option0')">
+                            <input type="text" class="option-input" placeholder="Вариант Б" value="${q.options[1]}" oninput="updateQuestion(this, 'option1')">
+                            <input type="text" class="option-input" placeholder="Вариант В" value="${q.options[2]}" oninput="updateQuestion(this, 'option2')">
+                            <input type="text" class="option-input" placeholder="Вариант Г" value="${q.options[3]}" oninput="updateQuestion(this, 'option3')">
+                        </div>
+                        <div class="correct-answer">
+                            <select class="correct-select" onchange="updateQuestion(this, 'correct')">
+                                <option value="">Выберите правильный ответ</option>
+                                <option value="0" ${q.correct === 0 ? 'selected' : ''}>Вариант А</option>
+                                <option value="1" ${q.correct === 1 ? 'selected' : ''}>Вариант Б</option>
+                                <option value="2" ${q.correct === 2 ? 'selected' : ''}>Вариант В</option>
+                                <option value="3" ${q.correct === 3 ? 'selected' : ''}>Вариант Г</option>
+                            </select>
+                        </div>
+                    `;
+                    
+                    questionsContainer.appendChild(questionCard);
+                    
+                    questions.push({
+                        id: questionId,
+                        text: q.text,
+                        options: [...q.options],
+                        correct: q.correct
+                    });
+                });
+                
+                // Переключаемся на ручной режим для просмотра
+                manualTab.click();
+                checkGenerateButton();
+                
+                alert(`Разобрано ${parsedQuestions.length} вопросов!`);
+            });
+
             // Генерация теста
             function generateTest() {
-                const subject = subjectInput.value.trim() || 'Тест';
+                const subject = document.querySelector('.tab.active') === manualTab ? 
+                    subjectInput.value.trim() : importSubjectInput.value.trim();
+                
+                if (!subject) {
+                    alert('Введите название предмета!');
+                    return;
+                }
                 
                 // Создаем уникальный ID теста
                 const testId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
@@ -750,22 +1062,15 @@
                 // Очищаем QR-код
                 qrCode.innerHTML = '';
                 
-                // Генерируем QR-код
-                QRCode.toCanvas(testUrl, {
-                    width: 200,
-                    margin: 2,
-                    color: {
-                        dark: '#333333',
-                        light: '#ffffff'
-                    }
-                }, function(error, canvas) {
-                    if (error) {
-                        console.error('Ошибка генерации QR-кода:', error);
+                // Генерируем QR-код (исправленная версия)
+                QRCode.toString(testUrl, { type: 'svg' }, function(err, svg) {
+                    if (err) {
+                        console.error('Ошибка генерации QR-кода:', err);
                         qrCode.innerHTML = '<div style="color: red;">Ошибка генерации QR-кода</div>';
                         return;
                     }
                     
-                    qrCode.appendChild(canvas);
+                    qrCode.innerHTML = svg;
                 });
                 
                 testLink.innerHTML = `<strong>Ссылка:</strong> ${testUrl}`;
@@ -780,30 +1085,12 @@
                 questions = [];
                 questionsContainer.innerHTML = '';
                 addQuestion();
+                importText.value = '';
+                
+                // Переключаемся на ручной режим
+                manualTab.click();
                 
                 alert('Тест успешно создан! QR-код готов к использованию.');
-            }
-
-            // Загрузка теста по ID
-            function loadTest(testId) {
-                const testData = JSON.parse(localStorage.getItem(`test_${testId}`));
-                
-                if (!testData) {
-                    alert('Тест не найден! Он мог быть удален.');
-                    return;
-                }
-                
-                currentTest = testData;
-                currentQuestionIndex = 0;
-                userAnswers = new Array(testData.questions.length).fill(null);
-                testCompleted = false;
-                
-                // Показываем страницу теста
-                mainMenu.style.display = 'none';
-                testPage.classList.add('active');
-                
-                // Отображаем тест
-                renderTest();
             }
 
             // Отрисовка теста
