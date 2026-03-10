@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор тестов с QR-кодом</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-weight: 300;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        h1 span {
+            font-weight: 700;
+            color: #ffd700;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+        
+        /* Основной контейнер */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        /* Левая панель - создание теста */
+        .creator-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .panel-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .subject-selector {
+            margin-bottom: 25px;
+        }
+        
+        .subject-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .subject-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .subject-input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .questions-container {
+            margin: 25px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .question-card:hover {
+            border-color: #667eea;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .question-number {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .remove-question {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .remove-question:hover {
+            background: #ff5252;
+            transform: scale(1.1);
+        }
+        
+        .question-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .option-input {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .correct-answer {
+            margin-top: 10px;
+        }
+        
+        .correct-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .add-question-btn {
+            width: 100%;
+            padding: 15px;
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+        
+        .add-question-btn:hover {
+            background: #45b7af;
+            transform: translateY(-2px);
+        }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .generate-btn:disabled {
+            background: #b3b3b3;
+            cursor: not-allowed;
+        }
+        
+        /* Правая панель - QR-код и тест */
+        .test-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .qr-section {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .qr-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        #qrCode {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        #qrCode canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .test-link-container {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            word-break: break-all;
+            margin: 15px 0;
+        }
+        
+        .copy-btn {
+            padding: 10px 25px;
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .copy-btn:hover {
+            background: #45b7af;
+            transform: translateY(-2px);
+        }
+        
+        .test-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .test-list-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .test-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .test-item-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            flex: 1;
+            margin-right: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .test-item-delete {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* Стили для прохождения теста */
+        .test-container {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 30px;
+        }
+        
+        .test-container.active {
+            display: block;
+        }
+        
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .test-subject {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .test-progress {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .test-question {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .test-question-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .test-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .test-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .test-option:hover {
+            background: #e8f0fe;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .test-option input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .test-option label {
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .test-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn.prev {
+            background: #4ecdc4;
+            color: white;
+        }
+        
+        .nav-btn.next {
+            background: #667eea;
+            color: white;
+        }
+        
+        .nav-btn.submit {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-btn:disabled {
+            background: #b3b3b3;
+            cursor: not-allowed;
+        }
+        
+        .test-result {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .result-score {
+            font-size: 60px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        
+        .result-message {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .back-to-menu {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h1>📝 <span>Конструктор тестов</span></h1>
+        <div class="subtitle">Создай тест по любому предмету и поделись им через QR-код</div>
+        
+        <!-- Главное меню -->
+        <div id="mainMenu" class="main-container">
+            <!-- Левая панель - создание теста -->
+            <div class="creator-panel">
+                <div class="panel-title">
+                    <span>🔨</span> Создание теста
+                </div>
+                
+                <div class="subject-selector">
+                    <div class="subject-label">Предмет:</div>
+                    <input type="text" id="subjectInput" class="subject-input" placeholder="Например: Математика, История, Физика" value="Математика">
+                </div>
+                
+                <div class="questions-container" id="questionsContainer">
+                    <!-- Вопросы будут добавляться сюда -->
+                </div>
+                
+                <button class="add-question-btn" id="addQuestionBtn">
+                    ➕ Добавить вопрос
+                </button>
+                
+                <button class="generate-btn" id="generateBtn" disabled>
+                    🎯 Сформировать тест
+                </button>
+            </div>
+            
+            <!-- Правая панель - QR-код и список тестов -->
+            <div class="test-panel">
+                <div class="qr-section" id="qrSection" style="display: none;">
+                    <div class="qr-title">📱 QR-код для прохождения теста</div>
+                    <div id="qrCode"></div>
+                    <div class="test-link-container" id="testLink"></div>
+                    <button class="copy-btn" id="copyBtn">Копировать ссылку</button>
+                </div>
+                
+                <div id="placeholderSection">
+                    <div class="test-list">
+                        <div class="test-list-title">📋 Сохраненные тесты:</div>
+                        <div id="testList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Страница теста -->
+        <div id="testPage" class="test-container">
+            <div class="test-header">
+                <div class="test-subject" id="testSubject"></div>
+                <div class="test-progress" id="testProgress"></div>
+            </div>
+            
+            <div id="testContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script>
+        (function() {
+            // Состояние приложения
+            let questions = [];
+            let currentTest = null;
+            let currentQuestionIndex = 0;
+            let userAnswers = [];
+            let testCompleted = false;
+
+            // Элементы DOM
+            const questionsContainer = document.getElementById('questionsContainer');
+            const addQuestionBtn = document.getElementById('addQuestionBtn');
+            const generateBtn = document.getElementById('generateBtn');
+            const subjectInput = document.getElementById('subjectInput');
+            const qrSection = document.getElementById('qrSection');
+            const placeholderSection = document.getElementById('placeholderSection');
+            const qrCode = document.getElementById('qrCode');
+            const testLink = document.getElementById('testLink');
+            const copyBtn = document.getElementById('copyBtn');
+            const mainMenu = document.getElementById('mainMenu');
+            const testPage = document.getElementById('testPage');
+            const testSubject = document.getElementById('testSubject');
+            const testProgress = document.getElementById('testProgress');
+            const testContent = document.getElementById('testContent');
+            const testList = document.getElementById('testList');
+
+            // Загрузка тестов из localStorage
+            function loadTestList() {
+                const tests = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('test_')) {
+                        try {
+                            const test = JSON.parse(localStorage.getItem(key));
+                            tests.push(test);
+                        } catch (e) {
+                            console.error('Ошибка загрузки теста:', e);
+                        }
+                    }
+                }
+                
+                if (tests.length === 0) {
+                    testList.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Пока нет сохраненных тестов</div>';
+                    return;
+                }
+                
+                testList.innerHTML = tests.map(test => {
+                    const baseUrl = window.location.href.split('#')[0].split('?')[0];
+                    const testUrl = `${baseUrl}?test=${test.id}`;
+                    return `
+                        <div class="test-item">
+                            <span style="font-weight: 600; margin-right: 10px;">${test.subject}</span>
+                            <span style="color: #666; font-size: 12px;">${new Date(test.created).toLocaleString()}</span>
+                            <button class="test-item-delete" onclick="deleteTest('${test.id}')">×</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Удаление теста
+            window.deleteTest = function(testId) {
+                if (confirm('Удалить этот тест?')) {
+                    localStorage.removeItem(`test_${testId}`);
+                    loadTestList();
+                    
+                    // Если удаляем текущий тест, скрываем QR
+                    if (qrSection.style.display === 'block') {
+                        qrSection.style.display = 'none';
+                    }
+                }
+            };
+
+            // Добавление вопроса
+            function addQuestion() {
+                const questionId = Date.now() + Math.random();
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.dataset.id = questionId;
+                
+                questionCard.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">Вопрос ${questions.length + 1}</span>
+                        <button class="remove-question" onclick="removeQuestion(this)">×</button>
+                    </div>
+                    <textarea class="question-input" placeholder="Введите вопрос..." oninput="updateQuestion(this, 'text')"></textarea>
+                    <div class="options-container">
+                        <input type="text" class="option-input" placeholder="Вариант А" oninput="updateQuestion(this, 'option0')">
+                        <input type="text" class="option-input" placeholder="Вариант Б" oninput="updateQuestion(this, 'option1')">
+                        <input type="text" class="option-input" placeholder="Вариант В" oninput="updateQuestion(this, 'option2')">
+                        <input type="text" class="option-input" placeholder="Вариант Г" oninput="updateQuestion(this, 'option3')">
+                    </div>
+                    <div class="correct-answer">
+                        <select class="correct-select" onchange="updateQuestion(this, 'correct')">
+                            <option value="">Выберите правильный ответ</option>
+                            <option value="0">Вариант А</option>
+                            <option value="1">Вариант Б</option>
+                            <option value="2">Вариант В</option>
+                            <option value="3">Вариант Г</option>
+                        </select>
+                    </div>
+                `;
+                
+                questionsContainer.appendChild(questionCard);
+                
+                // Добавляем вопрос в массив
+                questions.push({
+                    id: questionId,
+                    text: '',
+                    options: ['', '', '', ''],
+                    correct: null
+                });
+                
+                updateQuestionNumbers();
+                checkGenerateButton();
+            }
+
+            // Обновление вопроса
+            window.updateQuestion = function(element, field) {
+                const card = element.closest('.question-card');
+                const questionId = card.dataset.id;
+                const question = questions.find(q => q.id == questionId);
+                
+                if (field === 'text') {
+                    question.text = element.value;
+                } else if (field.startsWith('option')) {
+                    const index = parseInt(field.replace('option', ''));
+                    question.options[index] = element.value;
+                } else if (field === 'correct') {
+                    question.correct = element.value ? parseInt(element.value) : null;
+                }
+                
+                checkGenerateButton();
+            };
+
+            // Удаление вопроса
+            window.removeQuestion = function(button) {
+                const card = button.closest('.question-card');
+                const questionId = card.dataset.id;
+                
+                questions = questions.filter(q => q.id != questionId);
+                card.remove();
+                
+                updateQuestionNumbers();
+                checkGenerateButton();
+            };
+
+            // Обновление номеров вопросов
+            function updateQuestionNumbers() {
+                const cards = document.querySelectorAll('.question-card');
+                cards.forEach((card, index) => {
+                    card.querySelector('.question-number').textContent = `Вопрос ${index + 1}`;
+                });
+            }
+
+            // Проверка возможности генерации теста
+            function checkGenerateButton() {
+                const isValid = questions.every(q => 
+                    q.text.trim() !== '' && 
+                    q.options.every(opt => opt.trim() !== '') && 
+                    q.correct !== null
+                );
+                
+                generateBtn.disabled = !isValid || questions.length === 0;
+            }
+
+            // Генерация теста
+            function generateTest() {
+                const subject = subjectInput.value.trim() || 'Тест';
+                
+                // Создаем уникальный ID теста
+                const testId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+                
+                // Сохраняем тест в localStorage
+                const testData = {
+                    id: testId,
+                    subject: subject,
+                    questions: questions.map(q => ({
+                        text: q.text,
+                        options: [...q.options],
+                        correct: q.correct
+                    })),
+                    created: new Date().toISOString()
+                };
+                
+                localStorage.setItem(`test_${testId}`, JSON.stringify(testData));
+                
+                // Создаем ссылку на тест
+                const baseUrl = window.location.href.split('#')[0].split('?')[0];
+                const testUrl = `${baseUrl}?test=${testId}`;
+                
+                // Очищаем QR-код
+                qrCode.innerHTML = '';
+                
+                // Генерируем QR-код
+                QRCode.toCanvas(testUrl, {
+                    width: 200,
+                    margin: 2,
+                    color: {
+                        dark: '#333333',
+                        light: '#ffffff'
+                    }
+                }, function(error, canvas) {
+                    if (error) {
+                        console.error('Ошибка генерации QR-кода:', error);
+                        qrCode.innerHTML = '<div style="color: red;">Ошибка генерации QR-кода</div>';
+                        return;
+                    }
+                    
+                    qrCode.appendChild(canvas);
+                });
+                
+                testLink.innerHTML = `<strong>Ссылка:</strong> ${testUrl}`;
+                
+                // Показываем QR-секцию
+                qrSection.style.display = 'block';
+                
+                // Обновляем список тестов
+                loadTestList();
+                
+                // Очищаем вопросы
+                questions = [];
+                questionsContainer.innerHTML = '';
+                addQuestion();
+                
+                alert('Тест успешно создан! QR-код готов к использованию.');
+            }
+
+            // Загрузка теста по ID
+            function loadTest(testId) {
+                const testData = JSON.parse(localStorage.getItem(`test_${testId}`));
+                
+                if (!testData) {
+                    alert('Тест не найден! Он мог быть удален.');
+                    return;
+                }
+                
+                currentTest = testData;
+                currentQuestionIndex = 0;
+                userAnswers = new Array(testData.questions.length).fill(null);
+                testCompleted = false;
+                
+                // Показываем страницу теста
+                mainMenu.style.display = 'none';
+                testPage.classList.add('active');
+                
+                // Отображаем тест
+                renderTest();
+            }
+
+            // Отрисовка теста
+            function renderTest() {
+                if (!currentTest) return;
+                
+                const question = currentTest.questions[currentQuestionIndex];
+                
+                testSubject.textContent = currentTest.subject;
+                testProgress.textContent = `Вопрос ${currentQuestionIndex + 1} из ${currentTest.questions.length}`;
+                
+                let html = `
+                    <div class="test-question">
+                        <div class="test-question-text">${question.text}</div>
+                        <div class="test-options">
+                `;
+                
+                question.options.forEach((option, index) => {
+                    const letters = ['А', 'Б', 'В', 'Г'];
+                    html += `
+                        <div class="test-option">
+                            <input type="radio" 
+                                   name="question" 
+                                   id="option${index}" 
+                                   value="${index}"
+                                   ${userAnswers[currentQuestionIndex] === index ? 'checked' : ''}
+                                   onchange="saveAnswer(${index})">
+                            <label for="option${index}">${letters[index]}. ${option}</label>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                    <div class="test-navigation">
+                `;
+                
+                if (currentQuestionIndex > 0) {
+                    html += `<button class="nav-btn prev" onclick="prevQuestion()">← Предыдущий</button>`;
+                } else {
+                    html += `<button class="nav-btn prev" disabled>← Предыдущий</button>`;
+                }
+                
+                if (currentQuestionIndex < currentTest.questions.length - 1) {
+                    html += `<button class="nav-btn next" onclick="nextQuestion()">Следующий →</button>`;
+                } else {
+                    const allAnswered = userAnswers.every(a => a !== null);
+                    html += `<button class="nav-btn submit" onclick="submitTest()" ${!allAnswered ? 'disabled' : ''}>Завершить тест</button>`;
+                }
+                
+                html += `</div>`;
+                
+                testContent.innerHTML = html;
+            }
+
+            // Сохранение ответа
+            window.saveAnswer = function(answerIndex) {
+                userAnswers[currentQuestionIndex] = answerIndex;
+                
+                // Обновляем кнопку завершения если это последний вопрос
+                if (currentQuestionIndex === currentTest.questions.length - 1) {
+                    const allAnswered = userAnswers.every(a => a !== null);
+                    const submitBtn = document.querySelector('.nav-btn.submit');
+                    if (submitBtn) {
+                        submitBtn.disabled = !allAnswered;
+                    }
+                }
+            };
+
+            // Следующий вопрос
+            window.nextQuestion = function() {
+                if (currentQuestionIndex < currentTest.questions.length - 1) {
+                    currentQuestionIndex++;
+                    renderTest();
+                }
+            };
+
+            // Предыдущий вопрос
+            window.prevQuestion = function() {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    renderTest();
+                }
+            };
+
+            // Завершение теста
+            window.submitTest = function() {
+                if (testCompleted) return;
+                
+                // Подсчет результатов
+                let correctCount = 0;
+                currentTest.questions.forEach((q, index) => {
+                    if (userAnswers[index] === q.correct) {
+                        correctCount++;
+                    }
+                });
+                
+                const totalQuestions = currentTest.questions.length;
+                const percentage = Math.round((correctCount / totalQuestions) * 100);
+                
+                let message;
+                if (percentage >= 90) message = 'Отлично! Ты настоящий эксперт! 🌟';
+                else if (percentage >= 75) message = 'Хорошо! Но есть куда расти! 📚';
+                else if (percentage >= 50) message = 'Неплохо, стоит повторить материал! 📖';
+                else message = 'Нужно больше практики! Ты справишься! 💪';
+                
+                testContent.innerHTML = `
+                    <div class="test-result">
+                        <div style="font-size: 80px; margin-bottom: 20px;">📊</div>
+                        <div class="result-score">${correctCount} / ${totalQuestions}</div>
+                        <div class="result-message">${message}</div>
+                        <div style="margin: 30px 0; font-size: 18px; color: #666;">
+                            Правильных ответов: ${correctCount} из ${totalQuestions} (${percentage}%)
+                        </div>
+                        <button class="back-to-menu" onclick="backToMenu()">← Вернуться в меню</button>
+                    </div>
+                `;
+                
+                testCompleted = true;
+            };
+
+            // Возврат в меню
+            window.backToMenu = function() {
+                testPage.classList.remove('active');
+                mainMenu.style.display = 'grid';
+                currentTest = null;
+            };
+
+            // Копирование ссылки
+            copyBtn.addEventListener('click', () => {
+                const linkText = testLink.textContent.replace('Ссылка:', '').trim();
+                navigator.clipboard.writeText(linkText).then(() => {
+                    alert('Ссылка скопирована!');
+                }).catch(() => {
+                    alert('Не удалось скопировать ссылку');
+                });
+            });
+
+            // Добавление первого вопроса при загрузке
+            addQuestion();
+
+            // Обработчик кнопки добавления вопроса
+            addQuestionBtn.addEventListener('click', addQuestion);
+
+            // Обработчик кнопки генерации
+            generateBtn.addEventListener('click', generateTest);
+
+            // Проверка URL на наличие параметра test
+            function checkUrlForTest() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const testId = urlParams.get('test');
+                
+                if (testId) {
+                    loadTest(testId);
+                }
+            }
+
+            // Загрузка списка тестов
+            loadTestList();
+
+            // Запуск проверки URL
+            checkUrlForTest();
+        })();
+    </script>
+</body>
+</html>
