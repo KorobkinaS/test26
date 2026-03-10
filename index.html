@@ -778,9 +778,10 @@
                 
                 testList.innerHTML = tests.map(test => {
                     const date = new Date(test.created).toLocaleString();
+                    const testUrl = `${window.location.origin}${window.location.pathname}?test=${test.id}`;
                     return `
                         <div class="test-item">
-                            <div class="test-item-info" onclick="window.loadTest('${test.id}')">
+                            <div class="test-item-info" onclick="window.location.href='${testUrl}'">
                                 <span class="test-item-subject">${test.subject}</span>
                                 <span class="test-item-date">${date}</span>
                                 <span style="color: #666; font-size: 12px; margin-left: 10px;">(${test.questions.length} вопросов)</span>
@@ -1059,8 +1060,8 @@
                 
                 localStorage.setItem(`test_${testId}`, JSON.stringify(testData));
                 
-                // Создаем ссылку на тест
-                const baseUrl = window.location.href.split('#')[0].split('?')[0];
+                // Создаем ссылку на тест (абсолютный URL)
+                const baseUrl = window.location.origin + window.location.pathname;
                 const testUrl = `${baseUrl}?test=${testId}`;
                 
                 // Очищаем QR-код
