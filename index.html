@@ -639,7 +639,7 @@
         </div>
     </div>
 
-    <!-- Подключаем библиотеку для QR-кода -->
+    <!-- Подключаем библиотеки -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
     <script>
@@ -897,6 +897,26 @@
                 alert(`Разобрано ${parsedQuestions.length} вопросов!`);
             });
 
+            // Функция для кодирования теста в строку
+            function encodeTest(testData) {
+                // Сначала преобразуем в JSON
+                const jsonStr = JSON.stringify(testData);
+                // Кодируем в base64 для безопасной передачи в URL
+                return btoa(encodeURIComponent(jsonStr));
+            }
+
+            // Функция для декодирования теста из строки
+            function decodeTest(encodedStr) {
+                try {
+                    // Декодируем из base64
+                    const jsonStr = decodeURIComponent(atob(encodedStr));
+                    return JSON.parse(jsonStr);
+                } catch (e) {
+                    console.error('Ошибка декодирования:', e);
+                    return null;
+                }
+            }
+
             // Генерация теста
             function generateTest() {
                 const subject = document.querySelector('.tab.active') === manualTab ? 
@@ -917,18 +937,17 @@
                     }))
                 };
                 
-                // Кодируем тест в строку для URL
-                const jsonStr = JSON.stringify(testData);
-                const compressed = LZString.compressToEncodedURIComponent(jsonStr);
+                // Кодируем тест
+                const encodedTest = encodeTest(testData);
                 
                 // Создаем ссылку на тест
                 const baseUrl = window.location.origin + window.location.pathname;
-                const testUrl = `${baseUrl}?test=${compressed}`;
+                const testUrl = `${baseUrl}?test=${encodedTest}`;
                 
                 // Очищаем QR-код
                 qrCode.innerHTML = '';
                 
-                // Генерируем QR-код через canvas
+                // Генерируем QR-код
                 QRCode.toCanvas(testUrl, { 
                     width: 200,
                     margin: 2,
@@ -951,15 +970,6 @@
                 // Показываем QR-секцию
                 qrSection.style.display = 'block';
                 
-                // Очищаем вопросы
-                questions = [];
-                questionsContainer.innerHTML = '';
-                addQuestion();
-                importText.value = '';
-                
-                // Переключаемся на ручной режим
-                manualTab.click();
-                
                 alert('Тест успешно создан! QR-код готов к использованию.');
             }
 
@@ -971,9 +981,12 @@
                 if (!testParam) return false;
                 
                 try {
-                    // Декодируем тест из URL
-                    const jsonStr = LZString.decompressFromEncodedURIComponent(testParam);
-                    const testData = JSON.parse(jsonStr);
+                    // Декодируем тест
+                    const testData = decodeTest(testParam);
+                    
+                    if (!testData) {
+                        throw new Error('Не удалось декодировать тест');
+                    }
                     
                     currentTest = testData;
                     currentQuestionIndex = 0;
