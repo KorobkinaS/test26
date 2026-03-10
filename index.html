@@ -338,6 +338,9 @@
             padding: 10px;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         #qrCode canvas {
@@ -698,6 +701,7 @@
         </div>
     </div>
 
+    <!-- Подключаем библиотеку для QR-кода -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script>
         (function() {
@@ -776,12 +780,12 @@
                     const date = new Date(test.created).toLocaleString();
                     return `
                         <div class="test-item">
-                            <div class="test-item-info" onclick="loadTest('${test.id}')">
+                            <div class="test-item-info" onclick="window.loadTest('${test.id}')">
                                 <span class="test-item-subject">${test.subject}</span>
                                 <span class="test-item-date">${date}</span>
                                 <span style="color: #666; font-size: 12px; margin-left: 10px;">(${test.questions.length} вопросов)</span>
                             </div>
-                            <button class="test-item-delete" onclick="deleteTest('${test.id}')">×</button>
+                            <button class="test-item-delete" onclick="window.deleteTest('${test.id}')">×</button>
                         </div>
                     `;
                 }).join('');
@@ -1062,15 +1066,22 @@
                 // Очищаем QR-код
                 qrCode.innerHTML = '';
                 
-                // Генерируем QR-код (исправленная версия)
-                QRCode.toString(testUrl, { type: 'svg' }, function(err, svg) {
+                // Генерируем QR-код через canvas
+                QRCode.toCanvas(testUrl, { 
+                    width: 200,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#ffffff'
+                    }
+                }, function(err, canvas) {
                     if (err) {
                         console.error('Ошибка генерации QR-кода:', err);
                         qrCode.innerHTML = '<div style="color: red;">Ошибка генерации QR-кода</div>';
                         return;
                     }
                     
-                    qrCode.innerHTML = svg;
+                    qrCode.appendChild(canvas);
                 });
                 
                 testLink.innerHTML = `<strong>Ссылка:</strong> ${testUrl}`;
