@@ -307,7 +307,7 @@
             cursor: not-allowed;
         }
         
-        /* Правая панель - QR-код и тест */
+        /* Правая панель - QR-код */
         .test-panel {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 30px;
@@ -349,12 +349,6 @@
             display: block;
         }
         
-        #qrCode img {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        
         .test-link-container {
             background: #667eea;
             color: white;
@@ -379,62 +373,6 @@
         .copy-btn:hover {
             background: #45b7af;
             transform: translateY(-2px);
-        }
-        
-        .test-list {
-            margin-top: 20px;
-            text-align: left;
-        }
-        
-        .test-list-title {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        
-        .test-item {
-            background: white;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .test-item-info {
-            flex: 1;
-            cursor: pointer;
-        }
-        
-        .test-item-subject {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .test-item-date {
-            font-size: 12px;
-            color: #999;
-            margin-left: 10px;
-        }
-        
-        .test-item-delete {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .test-item-delete:hover {
-            background: #ff5252;
-            transform: scale(1.1);
         }
         
         /* Стили для прохождения теста */
@@ -672,7 +610,7 @@
                 </button>
             </div>
             
-            <!-- Правая панель - QR-код и список тестов -->
+            <!-- Правая панель - QR-код -->
             <div class="test-panel">
                 <div class="qr-section" id="qrSection" style="display: none;">
                     <div class="qr-title">📱 QR-код для прохождения теста</div>
@@ -682,9 +620,9 @@
                 </div>
                 
                 <div id="placeholderSection">
-                    <div class="test-list">
-                        <div class="test-list-title">📋 Сохраненные тесты:</div>
-                        <div id="testList"></div>
+                    <div style="text-align: center; padding: 60px 20px; color: #999;">
+                        <div style="font-size: 60px; margin-bottom: 20px;">📊</div>
+                        <div>Создайте тест, чтобы получить QR-код</div>
                     </div>
                 </div>
             </div>
@@ -703,6 +641,7 @@
 
     <!-- Подключаем библиотеку для QR-кода -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
     <script>
         (function() {
             // Состояние приложения
@@ -730,7 +669,6 @@
             const testSubject = document.getElementById('testSubject');
             const testProgress = document.getElementById('testProgress');
             const testContent = document.getElementById('testContent');
-            const testList = document.getElementById('testList');
             
             // Табы
             const manualTab = document.getElementById('manualTab');
@@ -752,80 +690,6 @@
                 importSection.classList.add('active');
                 manualSection.classList.add('hidden');
             });
-
-            // Загрузка тестов из localStorage
-            function loadTestList() {
-                const tests = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('test_')) {
-                        try {
-                            const test = JSON.parse(localStorage.getItem(key));
-                            tests.push(test);
-                        } catch (e) {
-                            console.error('Ошибка загрузки теста:', e);
-                        }
-                    }
-                }
-                
-                // Сортируем по дате (новые сверху)
-                tests.sort((a, b) => new Date(b.created) - new Date(a.created));
-                
-                if (tests.length === 0) {
-                    testList.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Пока нет сохраненных тестов</div>';
-                    return;
-                }
-                
-                testList.innerHTML = tests.map(test => {
-                    const date = new Date(test.created).toLocaleString();
-                    const testUrl = `${window.location.origin}${window.location.pathname}?test=${test.id}`;
-                    return `
-                        <div class="test-item">
-                            <div class="test-item-info" onclick="window.location.href='${testUrl}'">
-                                <span class="test-item-subject">${test.subject}</span>
-                                <span class="test-item-date">${date}</span>
-                                <span style="color: #666; font-size: 12px; margin-left: 10px;">(${test.questions.length} вопросов)</span>
-                            </div>
-                            <button class="test-item-delete" onclick="window.deleteTest('${test.id}')">×</button>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            // Удаление теста
-            window.deleteTest = function(testId) {
-                if (confirm('Удалить этот тест?')) {
-                    localStorage.removeItem(`test_${testId}`);
-                    loadTestList();
-                    
-                    // Если удаляем текущий тест, скрываем QR
-                    if (qrSection.style.display === 'block') {
-                        qrSection.style.display = 'none';
-                    }
-                }
-            };
-
-            // Загрузка теста для прохождения
-            window.loadTest = function(testId) {
-                const testData = JSON.parse(localStorage.getItem(`test_${testId}`));
-                
-                if (!testData) {
-                    alert('Тест не найден! Он мог быть удален.');
-                    return;
-                }
-                
-                currentTest = testData;
-                currentQuestionIndex = 0;
-                userAnswers = new Array(testData.questions.length).fill(null);
-                testCompleted = false;
-                
-                // Показываем страницу теста
-                mainMenu.style.display = 'none';
-                testPage.classList.add('active');
-                
-                // Отображаем тест
-                renderTest();
-            };
 
             // Добавление вопроса (ручное)
             function addQuestion() {
@@ -1043,26 +907,23 @@
                     return;
                 }
                 
-                // Создаем уникальный ID теста
-                const testId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-                
-                // Сохраняем тест в localStorage
+                // Создаем объект теста
                 const testData = {
-                    id: testId,
                     subject: subject,
                     questions: questions.map(q => ({
                         text: q.text,
                         options: [...q.options],
                         correct: q.correct
-                    })),
-                    created: new Date().toISOString()
+                    }))
                 };
                 
-                localStorage.setItem(`test_${testId}`, JSON.stringify(testData));
+                // Кодируем тест в строку для URL
+                const jsonStr = JSON.stringify(testData);
+                const compressed = LZString.compressToEncodedURIComponent(jsonStr);
                 
-                // Создаем ссылку на тест (абсолютный URL)
+                // Создаем ссылку на тест
                 const baseUrl = window.location.origin + window.location.pathname;
-                const testUrl = `${baseUrl}?test=${testId}`;
+                const testUrl = `${baseUrl}?test=${compressed}`;
                 
                 // Очищаем QR-код
                 qrCode.innerHTML = '';
@@ -1090,9 +951,6 @@
                 // Показываем QR-секцию
                 qrSection.style.display = 'block';
                 
-                // Обновляем список тестов
-                loadTestList();
-                
                 // Очищаем вопросы
                 questions = [];
                 questionsContainer.innerHTML = '';
@@ -1103,6 +961,38 @@
                 manualTab.click();
                 
                 alert('Тест успешно создан! QR-код готов к использованию.');
+            }
+
+            // Загрузка теста из URL
+            function loadTestFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const testParam = urlParams.get('test');
+                
+                if (!testParam) return false;
+                
+                try {
+                    // Декодируем тест из URL
+                    const jsonStr = LZString.decompressFromEncodedURIComponent(testParam);
+                    const testData = JSON.parse(jsonStr);
+                    
+                    currentTest = testData;
+                    currentQuestionIndex = 0;
+                    userAnswers = new Array(testData.questions.length).fill(null);
+                    testCompleted = false;
+                    
+                    // Показываем страницу теста
+                    mainMenu.style.display = 'none';
+                    testPage.classList.add('active');
+                    
+                    // Отображаем тест
+                    renderTest();
+                    
+                    return true;
+                } catch (e) {
+                    console.error('Ошибка загрузки теста:', e);
+                    alert('Ошибка загрузки теста. Ссылка могла быть повреждена.');
+                    return false;
+                }
             }
 
             // Отрисовка теста
@@ -1230,6 +1120,11 @@
                 testPage.classList.remove('active');
                 mainMenu.style.display = 'grid';
                 currentTest = null;
+                
+                // Убираем параметры из URL
+                const url = new URL(window.location);
+                url.searchParams.delete('test');
+                window.history.replaceState({}, '', url);
             };
 
             // Копирование ссылки
@@ -1251,21 +1146,10 @@
             // Обработчик кнопки генерации
             generateBtn.addEventListener('click', generateTest);
 
-            // Проверка URL на наличие параметра test
-            function checkUrlForTest() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const testId = urlParams.get('test');
-                
-                if (testId) {
-                    loadTest(testId);
-                }
+            // Загружаем тест из URL при старте
+            if (!loadTestFromUrl()) {
+                mainMenu.style.display = 'grid';
             }
-
-            // Загрузка списка тестов
-            loadTestList();
-
-            // Запуск проверки URL
-            checkUrlForTest();
         })();
     </script>
 </body>
