@@ -331,22 +331,16 @@
         }
         
         #qrCode {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            min-height: 250px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
         #qrCode canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
         }
         
         .test-link-container {
@@ -373,6 +367,12 @@
         .copy-btn:hover {
             background: #45b7af;
             transform: translateY(-2px);
+        }
+        
+        .url-length-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
         }
         
         /* Стили для прохождения теста */
@@ -617,6 +617,7 @@
                     <div id="qrCode"></div>
                     <div class="test-link-container" id="testLink"></div>
                     <button class="copy-btn" id="copyBtn">Копировать ссылку</button>
+                    <div class="url-length-info" id="urlLengthInfo"></div>
                 </div>
                 
                 <div id="placeholderSection">
@@ -640,8 +641,9 @@
     </div>
 
     <!-- Подключаем библиотеки -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    
     <script>
         (function() {
             // Состояние приложения
@@ -664,6 +666,7 @@
             const qrCode = document.getElementById('qrCode');
             const testLink = document.getElementById('testLink');
             const copyBtn = document.getElementById('copyBtn');
+            const urlLengthInfo = document.getElementById('urlLengthInfo');
             const mainMenu = document.getElementById('mainMenu');
             const testPage = document.getElementById('testPage');
             const testSubject = document.getElementById('testSubject');
@@ -897,140 +900,198 @@
                 alert(`Разобрано ${parsedQuestions.length} вопросов!`);
             });
 
-// Функции для кодирования/декодирования теста
-function encodeTest(testData) {
-    try {
-        const jsonStr = JSON.stringify(testData);
-        return LZString.compressToEncodedURIComponent(jsonStr);
-    } catch (e) {
-        console.error('Ошибка кодирования:', e);
-        return null;
-    }
-}
+            // Функция для оптимизации данных теста (сокращаем имена полей)
+            function optimizeTestData(testData) {
+                return {
+                    s: testData.subject, // subject
+                    q: testData.questions.map(q => ({
+                        t: q.text,        // text
+                        o: q.options,      // options
+                        c: q.correct       // correct
+                    }))
+                };
+            }
 
-function decodeTest(encodedStr) {
-    try {
-        if (!encodedStr) return null;
-        const jsonStr = LZString.decompressFromEncodedURIComponent(encodedStr);
-        if (!jsonStr) return null;
-        return JSON.parse(jsonStr);
-    } catch (e) {
-        console.error('Ошибка декодирования:', e);
-        return null;
-    }
-}
+            // Функция для восстановления данных теста
+            function restoreTestData(optimizedData) {
+                return {
+                    subject: optimizedData.s,
+                    questions: optimizedData.q.map(q => ({
+                        text: q.t,
+                        options: q.o,
+                        correct: q.c
+                    }))
+                };
+            }
 
-// Генерация теста
-function generateTest() {
-    const subject = document.querySelector('.tab.active') === manualTab ? 
-        subjectInput.value.trim() : importSubjectInput.value.trim();
-    
-    if (!subject) {
-        alert('Введите название предмета!');
-        return;
-    }
-    
-    if (questions.length === 0) {
-        alert('Добавьте хотя бы один вопрос!');
-        return;
-    }
-    
-    // Создаем объект теста
-    const testData = {
-        subject: subject,
-        questions: questions.map(q => ({
-            text: q.text,
-            options: [...q.options],
-            correct: q.correct
-        }))
-    };
-    
-    // Кодируем тест
-    const encodedTest = encodeTest(testData);
-    
-    if (!encodedTest) {
-        alert('Ошибка при создании теста. Попробуйте ещё раз.');
-        return;
-    }
-    
-    // Создаем ссылку на тест
-    const baseUrl = window.location.origin + window.location.pathname;
-    const testUrl = `${baseUrl}?test=${encodedTest}`;
-    
-    // Проверяем длину URL
-    if (testUrl.length > 2000) {
-        alert('Тест слишком большой! Уменьшите количество вопросов или длину текста.');
-        return;
-    }
-    
-    // Очищаем QR-код
-    qrCode.innerHTML = '';
-    
-    // Генерируем QR-код
-    QRCode.toCanvas(testUrl, { 
-        width: 200,
-        margin: 2,
-        color: {
-            dark: '#000000',
-            light: '#ffffff'
-        }
-    }, function(err, canvas) {
-        if (err) {
-            console.error('Ошибка генерации QR-кода:', err);
-            qrCode.innerHTML = '<div style="color: red;">Ошибка генерации QR-кода</div>';
-            return;
-        }
-        
-        qrCode.appendChild(canvas);
-    });
-    
-    testLink.innerHTML = `<strong>Ссылка:</strong> ${testUrl}`;
-    
-    // Показываем QR-секцию
-    qrSection.style.display = 'block';
-    
-    alert('Тест успешно создан! QR-код готов к использованию.');
-}
+            // Кодирование теста
+            function encodeTest(testData) {
+                try {
+                    // Сначала оптимизируем
+                    const optimized = optimizeTestData(testData);
+                    // Преобразуем в JSON
+                    const jsonStr = JSON.stringify(optimized);
+                    // Сжимаем для URL
+                    return LZString.compressToEncodedURIComponent(jsonStr);
+                } catch (e) {
+                    console.error('Ошибка кодирования:', e);
+                    return null;
+                }
+            }
 
-// Загрузка теста из URL
-function loadTestFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const testParam = urlParams.get('test');
-    
-    if (!testParam) return false;
-    
-    try {
-        // Декодируем тест
-        const testData = decodeTest(testParam);
-        
-        if (!testData) {
-            throw new Error('Не удалось декодировать тест');
-        }
-        
-        // Проверяем, что тест содержит нужные поля
-        if (!testData.subject || !Array.isArray(testData.questions) || testData.questions.length === 0) {
-            throw new Error('Некорректный формат теста');
-        }
-        
-        currentTest = testData;
-        currentQuestionIndex = 0;
-        userAnswers = new Array(testData.questions.length).fill(null);
-        testCompleted = false;
-        
-        // Показываем страницу теста
-        mainMenu.style.display = 'none';
-        testPage.classList.add('active');
-        
-        // Отображаем тест
-        renderTest();
-        
-        return true;
-    } catch (e) {
-        console.error('Ошибка загрузки теста:', e);
-        alert('Ошибка загрузки теста. Ссылка могла быть повреждена или тест слишком большой.');
-        return false;
-    }
-}
+            // Декодирование теста
+            function decodeTest(encodedStr) {
+                try {
+                    if (!encodedStr) return null;
+                    // Распаковываем из URL
+                    const jsonStr = LZString.decompressFromEncodedURIComponent(encodedStr);
+                    if (!jsonStr) return null;
+                    const optimized = JSON.parse(jsonStr);
+                    // Восстанавливаем структуру
+                    return restoreTestData(optimized);
+                } catch (e) {
+                    console.error('Ошибка декодирования:', e);
+                    return null;
+                }
+            }
+
+            // Функция для определения версии QR-кода по длине данных
+            function getQRVersion(dataLength) {
+                if (dataLength < 100) return 5;
+                if (dataLength < 300) return 10;
+                if (dataLength < 600) return 15;
+                if (dataLength < 1000) return 20;
+                return 25; // Максимальная версия
+            }
+
+            // Генерация QR-кода
+            function generateQRCode(url) {
+                qrCode.innerHTML = '';
+                
+                try {
+                    // Создаем QR-код
+                    const qr = qrcode(0, 'M'); // 'M' - уровень коррекции ошибок Medium
+                    qr.addData(url);
+                    qr.make();
+                    
+                    // Получаем размер матрицы
+                    const size = qr.getModuleCount();
+                    
+                    // Вычисляем размер ячейки (чтобы итоговое изображение было ~250px)
+                    const cellSize = Math.max(3, Math.floor(250 / size));
+                    const canvasSize = size * cellSize;
+                    
+                    // Создаем canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = canvasSize;
+                    canvas.height = canvasSize;
+                    canvas.style.width = '250px';
+                    canvas.style.height = '250px';
+                    
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Рисуем QR-код с высоким контрастом
+                    for (let row = 0; row < size; row++) {
+                        for (let col = 0; col < size; col++) {
+                            const cell = qr.isDark(row, col);
+                            ctx.fillStyle = cell ? '#000000' : '#ffffff';
+                            ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                        }
+                    }
+                    
+                    // Добавляем белую рамку
+                    const container = document.createElement('div');
+                    container.style.padding = '10px';
+                    container.style.backgroundColor = '#ffffff';
+                    container.style.borderRadius = '10px';
+                    container.style.display = 'inline-block';
+                    container.appendChild(canvas);
+                    
+                    qrCode.appendChild(container);
+                    
+                } catch (e) {
+                    console.error('Ошибка генерации QR-кода:', e);
+                    qrCode.innerHTML = '<div style="color: red; padding: 20px;">Ошибка генерации QR-кода</div>';
+                }
+            }
+
+            // Генерация теста
+            function generateTest() {
+                const subject = document.querySelector('.tab.active') === manualTab ? 
+                    subjectInput.value.trim() : importSubjectInput.value.trim();
+                
+                if (!subject) {
+                    alert('Введите название предмета!');
+                    return;
+                }
+                
+                if (questions.length === 0) {
+                    alert('Добавьте хотя бы один вопрос!');
+                    return;
+                }
+                
+                // Создаем объект теста
+                const testData = {
+                    subject: subject,
+                    questions: questions.map(q => ({
+                        text: q.text,
+                        options: [...q.options],
+                        correct: q.correct
+                    }))
+                };
+                
+                // Кодируем тест
+                const encodedTest = encodeTest(testData);
+                
+                if (!encodedTest) {
+                    alert('Ошибка при создании теста. Попробуйте ещё раз.');
+                    return;
+                }
+                
+                // Создаем ссылку на тест
+                const baseUrl = window.location.origin + window.location.pathname;
+                const testUrl = `${baseUrl}?test=${encodedTest}`;
+                
+                // Информация о длине URL
+                const urlLength = testUrl.length;
+                let lengthStatus = '';
+                let qrVersion = getQRVersion(urlLength);
+                
+                if (urlLength < 300) {
+                    lengthStatus = '✅ Легкий для сканирования';
+                } else if (urlLength < 600) {
+                    lengthStatus = '⚠️ Средний размер';
+                } else if (urlLength < 1000) {
+                    lengthStatus = '⚠️⚠️ Сложный для сканирования';
+                } else {
+                    lengthStatus = '❌ Очень сложный - может не сканироваться';
+                }
+                
+                urlLengthInfo.innerHTML = `
+                    <strong>Длина ссылки:</strong> ${urlLength} символов<br>
+                    <strong>Версия QR:</strong> ${qrVersion}<br>
+                    <strong>Статус:</strong> ${lengthStatus}<br>
+                    <strong>Вопросов:</strong> ${questions.length}
+                `;
+                
+                // Генерируем QR-код
+                generateQRCode(testUrl);
+                
+                testLink.innerHTML = `<strong>Ссылка:</strong> ${testUrl}`;
+                
+                // Показываем QR-секцию
+                qrSection.style.display = 'block';
+                
+                // Предупреждение для больших тестов
+                if (urlLength > 800) {
+                    alert(`Внимание! Тест получился большим (${urlLength} символов). 
+QR-код может плохо сканироваться. Рекомендации:
+- Уменьшите количество вопросов
+- Сократите тексты вопросов
+- Используйте более короткие варианты ответов`);
+                }
+            }
+
             // Загрузка теста из URL
             function loadTestFromUrl() {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -1044,6 +1105,11 @@ function loadTestFromUrl() {
                     
                     if (!testData) {
                         throw new Error('Не удалось декодировать тест');
+                    }
+                    
+                    // Проверяем, что тест содержит нужные поля
+                    if (!testData.subject || !Array.isArray(testData.questions) || testData.questions.length === 0) {
+                        throw new Error('Некорректный формат теста');
                     }
                     
                     currentTest = testData;
