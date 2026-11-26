@@ -1,1227 +1,680 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор тестов с QR-кодом</title>
+    <title>Gilded Anatomy | Author Corsets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-color: #f9f7f4;
+            --text-dark: #1a1a1a;
+            --text-light: #6b6b6b;
+            --accent: #b89b7a;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Montserrat', sans-serif;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; object-fit: cover; }
+
+        h1, h2, h3 { font-family: var(--font-serif); font-weight: 300; letter-spacing: 0.02em; }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 1px;
+            background: var(--accent);
+            margin: 1rem auto 0;
+        }
+
+        /* HEADER */
+        header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(249, 247, 244, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+
+        .logo {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 400;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 1px;
+            background: var(--text-dark);
+            transition: var(--transition);
+        }
+        nav a:hover::after { width: 100%; }
+
+        .nav-coming-soon {
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.7rem !important;
+            transition: var(--transition);
+            cursor: pointer;
+            background: none;
+            font-family: var(--font-sans);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .nav-coming-soon:hover { background: var(--accent); color: #fff; }
+        .nav-coming-soon::after { display: none; }
+
+        /* Переключатель языков */
+        .lang-switcher {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-left: 1rem;
+        }
+        .lang-switcher button {
+            background: none;
+            border: none;
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+            padding: 0.2rem 0.3rem;
+        }
+        .lang-switcher button.active,
+        .lang-switcher button:hover { color: var(--accent); font-weight: 500; }
+
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .burger span { width: 25px; height: 1px; background: var(--text-dark); transition: var(--transition); }
+
+        /* HERO */
+        .hero {
             min-height: 100vh;
-            padding: 20px;
-        }
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 10px;
-            font-weight: 300;
-            font-size: 3em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        h1 span {
-            font-weight: 700;
-            color: #ffd700;
-        }
-        .subtitle {
-            text-align: center;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 40px;
-            font-size: 18px;
-        }
-        
-        /* Табы */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #333;
-        }
-        
-        .tab:hover {
-            background: white;
-            transform: translateY(-2px);
-        }
-        
-        .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        /* Основной контейнер */
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-        
-        /* Левая панель - создание теста */
-        .creator-panel {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        .panel-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        /* Ручное создание */
-        .manual-section {
-            display: block;
-        }
-        
-        .manual-section.hidden {
-            display: none;
-        }
-        
-        /* Импорт текста */
-        .import-section {
-            display: none;
-        }
-        
-        .import-section.active {
-            display: block;
-        }
-        
-        .import-textarea {
-            width: 100%;
-            height: 300px;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 14px;
-            font-family: monospace;
-            resize: vertical;
-            margin-bottom: 15px;
-        }
-        
-        .import-textarea:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        
-        .import-example {
-            background: #f0f4f8;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .import-example pre {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            margin-top: 10px;
-        }
-        
-        .subject-selector {
-            margin-bottom: 25px;
-        }
-        
-        .subject-label {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        
-        .subject-input {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 50px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .subject-input:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .questions-container {
-            margin: 25px 0;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        
-        .question-card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .question-card:hover {
-            border-color: #667eea;
-        }
-        
-        .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .question-number {
-            background: #667eea;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .remove-question {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-        
-        .remove-question:hover {
-            background: #ff5252;
-            transform: scale(1.1);
-        }
-        
-        .question-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 15px;
-            margin-bottom: 15px;
-            resize: vertical;
-        }
-        
-        .options-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .option-input {
-            padding: 10px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        .correct-answer {
-            margin-top: 10px;
-        }
-        
-        .correct-select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-        }
-        
-        .add-question-btn {
-            width: 100%;
-            padding: 15px;
-            background: #4ecdc4;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 15px;
-        }
-        
-        .add-question-btn:hover {
-            background: #45b7af;
-            transform: translateY(-2px);
-        }
-        
-        .generate-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-        
-        .generate-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .generate-btn:disabled {
-            background: #b3b3b3;
-            cursor: not-allowed;
-        }
-        
-        /* Правая панель - QR-код */
-        .test-panel {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        .qr-section {
-            text-align: center;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 20px;
-            margin-bottom: 25px;
-        }
-        
-        .qr-title {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        
-        #qrCode {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #qrCode canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        
-        .test-link-container {
-            background: #667eea;
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            word-break: break-all;
-            margin: 15px 0;
-        }
-        
-        .copy-btn {
-            padding: 10px 25px;
-            background: #4ecdc4;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        
-        .copy-btn:hover {
-            background: #45b7af;
-            transform: translateY(-2px);
-        }
-        
-        /* Стили для прохождения теста */
-        .test-container {
-            display: none;
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
-            padding: 30px;
-        }
-        
-        .test-container.active {
-            display: block;
-        }
-        
-        .test-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-        }
-        
-        .test-subject {
-            font-size: 28px;
-            font-weight: 700;
-            color: #333;
-        }
-        
-        .test-progress {
-            font-size: 18px;
-            color: #666;
-        }
-        
-        .test-question {
-            background: #f8f9fa;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .test-question-text {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
-        
-        .test-options {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-        }
-        
-        .test-option {
-            display: flex;
+            justify-content: center;
             align-items: center;
-            padding: 15px 20px;
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-        
-        .test-option:hover {
-            background: #e8f0fe;
-            border-color: #667eea;
-            transform: translateX(5px);
-        }
-        
-        .test-option input[type="radio"] {
-            margin-right: 15px;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-        
-        .test-option label {
-            font-size: 16px;
-            color: #333;
-            cursor: pointer;
-            flex: 1;
-        }
-        
-        .test-navigation {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .nav-btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .nav-btn.prev {
-            background: #4ecdc4;
-            color: white;
-        }
-        
-        .nav-btn.next {
-            background: #667eea;
-            color: white;
-        }
-        
-        .nav-btn.submit {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        .nav-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .nav-btn:disabled {
-            background: #b3b3b3;
-            cursor: not-allowed;
-        }
-        
-        .test-result {
             text-align: center;
-            padding: 40px;
+            padding: 8rem 2rem 4rem;
+            position: relative;
         }
-        
-        .result-score {
-            font-size: 60px;
-            font-weight: 700;
-            color: #667eea;
-            margin: 20px 0;
+        .hero h1 { font-size: clamp(3rem, 8vw, 6rem); line-height: 1.1; margin-bottom: 1.5rem; max-width: 900px; }
+        .hero h1 em { font-style: italic; color: var(--accent); }
+        .hero p { font-size: 1rem; max-width: 600px; color: var(--text-light); font-weight: 300; letter-spacing: 0.05em; margin-bottom: 2.5rem; }
+        .hero-cta {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border: 1px solid var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.8rem;
+            transition: var(--transition);
         }
-        
-        .result-message {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 30px;
+        .hero-cta:hover { background: var(--text-dark); color: var(--bg-color); }
+
+        /* PHILOSOPHY */
+        .philosophy { padding: 6rem 2rem; max-width: 900px; margin: 0 auto; text-align: center; }
+        .philosophy p {
+            font-family: var(--font-serif);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            line-height: 1.5;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            font-weight: 300;
         }
-        
-        .back-to-menu {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
+        .philosophy .highlight { font-style: italic; color: var(--accent); }
+
+        /* GALLERY */
+        .gallery-section { padding: 4rem 2rem 6rem; max-width: 1400px; margin: 0 auto; }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            background: #eae5df;
             cursor: pointer;
         }
-        
-        @media (max-width: 768px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            color: #fff;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+        .gallery-item:hover .overlay { opacity: 1; transform: translateY(0); }
+        .overlay h3 { font-size: 1.4rem; margin-bottom: 0.2rem; font-weight: 400; }
+        .overlay span { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); }
+
+        /* BANNER / MODAL */
+        .banner-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .banner-overlay.active { opacity: 1; visibility: visible; }
+
+        .banner-content {
+            background: var(--bg-color);
+            max-width: 560px;
+            width: 90%;
+            padding: 2.5rem 2.5rem 3rem;
+            text-align: center;
+            position: relative;
+            border: 1px solid var(--accent);
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .banner-overlay.active .banner-content { transform: translateY(0); }
+
+        .banner-image {
+            width: 100%;
+            max-height: 55vh;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .banner-content h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.8rem; }
+        .banner-content p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 1.5rem; font-weight: 300; }
+        .banner-content .highlight { color: var(--accent); font-style: italic; }
+
+        .close-btn {
+            position: absolute;
+            top: 0.8rem;
+            right: 1.2rem;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            transition: var(--transition);
+            line-height: 1;
+            z-index: 10;
+        }
+        .close-btn:hover { transform: rotate(90deg); color: var(--accent); }
+
+        .subscribe-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        .subscribe-form input {
+            padding: 0.9rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: transparent;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        .subscribe-form input:focus { border-color: var(--accent); }
+        .subscribe-form button[type="submit"] {
+            padding: 0.9rem;
+            background: var(--text-dark);
+            color: var(--bg-color);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .subscribe-form button[type="submit"]:hover { background: var(--accent); }
+
+        /* FOOTER */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.8rem;
+            color: var(--text-light);
+            letter-spacing: 0.05em;
+        }
+        footer .footer-logo {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            nav ul { gap: 1.2rem; }
+            .lang-switcher { margin-left: 0.5rem; }
+        }
+        @media (max-width: 768px) {
+            header { padding: 1rem 1.5rem; flex-wrap: wrap; gap: 1rem; }
+            nav ul { display: none; }
+            .burger { display: flex; }
+            .hero { padding-top: 6rem; }
+            .banner-content { padding: 1.5rem 1.5rem 2rem; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .philosophy { padding: 4rem 1.5rem; }
+            .lang-switcher { display: flex; }
+        }
+        @media (max-width: 480px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Плавное появление текста при смене языка */
+        [data-i18n] { transition: opacity 0.3s ease; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <h1>📝 <span>Конструктор тестов</span></h1>
-        <div class="subtitle">Создай тест по любому предмету и поделись им через QR-код</div>
-        
-        <!-- Главное меню -->
-        <div id="mainMenu" class="main-container">
-            <!-- Левая панель - создание теста -->
-            <div class="creator-panel">
-                <div class="panel-title">
-                    <span>🔨</span> Создание теста
-                </div>
-                
-                <!-- Табы -->
-                <div class="tabs">
-                    <button class="tab active" id="manualTab">✍️ Ручное создание</button>
-                    <button class="tab" id="importTab">📄 Импорт текста</button>
-                </div>
-                
-                <!-- Ручное создание -->
-                <div class="manual-section" id="manualSection">
-                    <div class="subject-selector">
-                        <div class="subject-label">Предмет:</div>
-                        <input type="text" id="subjectInput" class="subject-input" placeholder="Например: Математика, История, Физика" value="Математика">
-                    </div>
-                    
-                    <div class="questions-container" id="questionsContainer">
-                        <!-- Вопросы будут добавляться сюда -->
-                    </div>
-                    
-                    <button class="add-question-btn" id="addQuestionBtn">
-                        ➕ Добавить вопрос
-                    </button>
-                </div>
-                
-                <!-- Импорт текста -->
-                <div class="import-section" id="importSection">
-                    <div class="subject-selector">
-                        <div class="subject-label">Предмет:</div>
-                        <input type="text" id="importSubjectInput" class="subject-input" placeholder="Например: Математика, История, Физика" value="Математика">
-                    </div>
-                    
-                    <div class="import-example">
-                        <strong>📋 Пример формата:</strong>
-                        <pre>
-Вопрос 1: Что такое фотосинтез?
-А) Процесс дыхания растений
-Б) Процесс питания растений
-В) Процесс размножения растений
-Г) Процесс роста растений
-Правильный ответ: Б
 
-Вопрос 2: Какой газ выделяют растения при фотосинтезе?
-А) Кислород
-Б) Углекислый газ
-В) Азот
-Г) Водород
-Правильный ответ: А
-                        </pre>
-                    </div>
-                    
-                    <textarea class="import-textarea" id="importText" placeholder="Вставьте текст теста сюда..."></textarea>
-                    
-                    <button class="add-question-btn" id="parseBtn">
-                        🔍 Разобрать текст
-                    </button>
-                </div>
-                
-                <button class="generate-btn" id="generateBtn" disabled>
-                    🎯 Сформировать тест
-                </button>
-            </div>
-            
-            <!-- Правая панель - QR-код -->
-            <div class="test-panel">
-                <div class="qr-section" id="qrSection" style="display: none;">
-                    <div class="qr-title">📱 QR-код для прохождения теста</div>
-                    <div id="qrCode"></div>
-                    <div class="test-link-container" id="testLink"></div>
-                    <button class="copy-btn" id="copyBtn">Копировать ссылку</button>
-                </div>
-                
-                <div id="placeholderSection">
-                    <div style="text-align: center; padding: 60px 20px; color: #999;">
-                        <div style="font-size: 60px; margin-bottom: 20px;">📊</div>
-                        <div>Создайте тест, чтобы получить QR-код</div>
-                    </div>
-                </div>
-            </div>
+    <!-- HEADER -->
+    <header>
+        <div class="logo">Gilden Anatomy</div>
+        <nav>
+            <ul>
+                <li><a href="#philosophy" data-i18n="nav_philosophy">Philosophy</a></li>
+                <li><a href="#gallery" data-i18n="nav_gallery">Gallery</a></li>
+                <li><button class="nav-coming-soon" id="comingSoonBtn" data-i18n="nav_coming">Coming Soon</button></li>
+                <li class="lang-switcher">
+                    <button data-lang="en" class="active">EN</button>
+                    <button data-lang="ru">RU</button>
+                    <button data-lang="es">ES</button>
+                </li>
+            </ul>
+        </nav>
+        <button class="burger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1 data-i18n="hero_title">Gilded <em>Anatomy</em></h1>
+        <p data-i18n="hero_subtitle">Art doesn't belong only in galleries. It belongs in motion. In everyday life. On the body.</p>
+        <a href="#gallery" class="hero-cta" data-i18n="hero_cta">View Collection</a>
+    </section>
+
+    <!-- PHILOSOPHY -->
+    <section class="philosophy" id="philosophy">
+        <p data-i18n="phil_1">Gilded Anatomy was created from a simple belief: <span class="highlight">art doesn't belong only in galleries.</span> It belongs in motion. In everyday life. On the body.</p>
+        <p data-i18n="phil_2">Rooted in a multidisciplinary approach to creation, Gilded Anatomy draws from sculptural practice, material exploration, and a deep respect for form. Each piece is an extension of artistic expression, designed not just to be worn, but to transform the wearer into a <span class="highlight">living work of art.</span></p>
+        <p data-i18n="phil_3">We see fashion as more than adornment. It's a medium. A statement. A way to embody identity, emotion, and story.</p>
+        <p data-i18n="phil_4">Why observe art from a distance when you can <span class="highlight">inhabit it?</span> Gilded Anatomy exists to dissolve that boundary, to bring art closer, make it tangible, and allow it to move freely through the world.</p>
+        <p data-i18n="phil_5"><span class="highlight">This is not just something you wear. It's something you become.</span></p>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="gallery-section" id="gallery">
+        <h2 class="section-title" data-i18n="gallery_title">Collection</h2>
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Изображения будут добавлены через JS -->
         </div>
-        
-        <!-- Страница теста -->
-        <div id="testPage" class="test-container">
-            <div class="test-header">
-                <div class="test-subject" id="testSubject"></div>
-                <div class="test-progress" id="testProgress"></div>
-            </div>
-            
-            <div id="testContent"></div>
+    </section>
+
+    <!-- MODAL -->
+    <div class="banner-overlay" id="comingSoonBanner">
+        <div class="banner-content">
+            <button class="close-btn" id="closeBanner" aria-label="Close">&times;</button>
+            <img src="img/IMG-20261125-WA0042.jpg" alt="Gilded Anatomy — Coming Soon" class="banner-image" id="bannerImage">
+            <h2 data-i18n="modal_title">Coming Soon</h2>
+            <p data-i18n="modal_text">The new <span class="highlight">Gilded Anatomy</span> collection is on its way. Leave your email to be the first to know about the launch and get access to a private preview.</p>
+            <form class="subscribe-form" id="subscribeForm">
+                <input type="email" placeholder="Your email" required id="emailInput">
+                <button type="submit" data-i18n="modal_btn">Subscribe</button>
+            </form>
         </div>
     </div>
 
-    <!-- Подключаем библиотеки -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-logo">Gilded Anatomy</div>
+        <p data-i18n="footer_copy">&copy; 2026 Gilded Anatomy. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.7rem; opacity: 0.6;" data-i18n="footer_extra">Created with respect for form and motion.</p>
+    </footer>
+
     <script>
-        (function() {
-            // Состояние приложения
-            let questions = [];
-            let currentTest = null;
-            let currentQuestionIndex = 0;
-            let userAnswers = [];
-            let testCompleted = false;
+        /* =========================
+           ДАННЫЕ ДЛЯ ГАЛЕРЕИ
+           ========================= */
+        // Изделия (корсеты) с номерами 44–52
+        const corsetImages = [
+            { num: '44', name: 'Sculptural Form',    type: 'Author Corset' },
+            { num: '45', name: 'Gilded Touch',        type: 'Handmade Corset' },
+            { num: '46', name: 'Anatomy of Motion',   type: 'Art Object' },
+            { num: '47', name: 'Living Canvas',       type: 'Textured Corset' },
+            { num: '48', name: 'Silent Structure',    type: 'Author Corset' },
+            { num: '49', name: 'Golden Section',      type: 'Handmade Corset' },
+            { num: '50', name: 'Form & Void',         type: 'Art Object' },
+            { num: '51', name: 'Kinetic Shell',       type: 'Textured Corset' },
+            { num: '52', name: 'Final Study',         type: 'Author Corset' }
+        ];
+        // Журнальные изображения (альбомные) 23–41
+        const magazineImages = [
+            { num: '23', name: 'Editorial I',   type: 'Magazine' },
+            { num: '24', name: 'Editorial II',  type: 'Magazine' },
+            { num: '25', name: 'Editorial III', type: 'Magazine' },
+            { num: '26', name: 'Editorial IV',  type: 'Magazine' },
+            { num: '27', name: 'Editorial V',   type: 'Magazine' },
+            { num: '28', name: 'Editorial VI',  type: 'Magazine' },
+            { num: '29', name: 'Editorial VII', type: 'Magazine' },
+            { num: '30', name: 'Editorial VIII',type: 'Magazine' },
+            { num: '31', name: 'Editorial IX',  type: 'Magazine' },
+            { num: '32', name: 'Editorial X',   type: 'Magazine' },
+            { num: '33', name: 'Editorial XI',  type: 'Magazine' },
+            { num: '34', name: 'Editorial XII', type: 'Magazine' },
+            { num: '35', name: 'Editorial XIII',type: 'Magazine' },
+            { num: '36', name: 'Editorial XIV', type: 'Magazine' },
+            { num: '37', name: 'Editorial XV',  type: 'Magazine' },
+            { num: '38', name: 'Editorial XVI', type: 'Magazine' },
+            { num: '39', name: 'Editorial XVII',type: 'Magazine' },
+            { num: '40', name: 'Editorial XVIII',type: 'Magazine' },
+            { num: '41', name: 'Editorial XIX', type: 'Magazine' }
+        ];
 
-            // Элементы DOM
-            const questionsContainer = document.getElementById('questionsContainer');
-            const addQuestionBtn = document.getElementById('addQuestionBtn');
-            const generateBtn = document.getElementById('generateBtn');
-            const subjectInput = document.getElementById('subjectInput');
-            const importSubjectInput = document.getElementById('importSubjectInput');
-            const importText = document.getElementById('importText');
-            const parseBtn = document.getElementById('parseBtn');
-            const qrSection = document.getElementById('qrSection');
-            const placeholderSection = document.getElementById('placeholderSection');
-            const qrCode = document.getElementById('qrCode');
-            const testLink = document.getElementById('testLink');
-            const copyBtn = document.getElementById('copyBtn');
-            const mainMenu = document.getElementById('mainMenu');
-            const testPage = document.getElementById('testPage');
-            const testSubject = document.getElementById('testSubject');
-            const testProgress = document.getElementById('testProgress');
-            const testContent = document.getElementById('testContent');
-            
-            // Табы
-            const manualTab = document.getElementById('manualTab');
-            const importTab = document.getElementById('importTab');
-            const manualSection = document.getElementById('manualSection');
-            const importSection = document.getElementById('importSection');
-
-            // Переключение табов
-            manualTab.addEventListener('click', () => {
-                manualTab.classList.add('active');
-                importTab.classList.remove('active');
-                manualSection.classList.remove('hidden');
-                importSection.classList.remove('active');
-            });
-
-            importTab.addEventListener('click', () => {
-                importTab.classList.add('active');
-                manualTab.classList.remove('active');
-                importSection.classList.add('active');
-                manualSection.classList.add('hidden');
-            });
-
-            // Добавление вопроса (ручное)
-            function addQuestion() {
-                const questionId = Date.now() + Math.random();
-                const questionCard = document.createElement('div');
-                questionCard.className = 'question-card';
-                questionCard.dataset.id = questionId;
-                
-                questionCard.innerHTML = `
-                    <div class="question-header">
-                        <span class="question-number">Вопрос ${questions.length + 1}</span>
-                        <button class="remove-question" onclick="removeQuestion(this)">×</button>
-                    </div>
-                    <textarea class="question-input" placeholder="Введите вопрос..." oninput="updateQuestion(this, 'text')"></textarea>
-                    <div class="options-container">
-                        <input type="text" class="option-input" placeholder="Вариант А" oninput="updateQuestion(this, 'option0')">
-                        <input type="text" class="option-input" placeholder="Вариант Б" oninput="updateQuestion(this, 'option1')">
-                        <input type="text" class="option-input" placeholder="Вариант В" oninput="updateQuestion(this, 'option2')">
-                        <input type="text" class="option-input" placeholder="Вариант Г" oninput="updateQuestion(this, 'option3')">
-                    </div>
-                    <div class="correct-answer">
-                        <select class="correct-select" onchange="updateQuestion(this, 'correct')">
-                            <option value="">Выберите правильный ответ</option>
-                            <option value="0">Вариант А</option>
-                            <option value="1">Вариант Б</option>
-                            <option value="2">Вариант В</option>
-                            <option value="3">Вариант Г</option>
-                        </select>
-                    </div>
-                `;
-                
-                questionsContainer.appendChild(questionCard);
-                
-                // Добавляем вопрос в массив
-                questions.push({
-                    id: questionId,
-                    text: '',
-                    options: ['', '', '', ''],
-                    correct: null
-                });
-                
-                updateQuestionNumbers();
-                checkGenerateButton();
-            }
-
-            // Обновление вопроса
-            window.updateQuestion = function(element, field) {
-                const card = element.closest('.question-card');
-                const questionId = card.dataset.id;
-                const question = questions.find(q => q.id == questionId);
-                
-                if (field === 'text') {
-                    question.text = element.value;
-                } else if (field.startsWith('option')) {
-                    const index = parseInt(field.replace('option', ''));
-                    question.options[index] = element.value;
-                } else if (field === 'correct') {
-                    question.correct = element.value ? parseInt(element.value) : null;
-                }
-                
-                checkGenerateButton();
-            };
-
-            // Удаление вопроса
-            window.removeQuestion = function(button) {
-                const card = button.closest('.question-card');
-                const questionId = card.dataset.id;
-                
-                questions = questions.filter(q => q.id != questionId);
-                card.remove();
-                
-                updateQuestionNumbers();
-                checkGenerateButton();
-            };
-
-            // Обновление номеров вопросов
-            function updateQuestionNumbers() {
-                const cards = document.querySelectorAll('.question-card');
-                cards.forEach((card, index) => {
-                    card.querySelector('.question-number').textContent = `Вопрос ${index + 1}`;
-                });
-            }
-
-            // Проверка возможности генерации теста
-            function checkGenerateButton() {
-                const isValid = questions.every(q => 
-                    q.text.trim() !== '' && 
-                    q.options.every(opt => opt.trim() !== '') && 
-                    q.correct !== null
-                );
-                
-                generateBtn.disabled = !isValid || questions.length === 0;
-            }
-
-            // Парсинг текста теста
-            function parseTestText(text) {
-                const lines = text.split('\n');
-                const parsedQuestions = [];
-                let currentQuestion = null;
-                
-                for (let line of lines) {
-                    line = line.trim();
-                    if (!line) continue;
-                    
-                    // Поиск вопроса
-                    if (line.toLowerCase().includes('вопрос')) {
-                        if (currentQuestion) {
-                            parsedQuestions.push(currentQuestion);
-                        }
-                        currentQuestion = {
-                            text: line.replace(/^[^:]*[:]\s*/, '').trim(),
-                            options: ['', '', '', ''],
-                            correct: null
-                        };
-                    }
-                    // Поиск вариантов ответа
-                    else if (line.match(/^[А-Г][\.)\s]/)) {
-                        const letter = line[0];
-                        const index = 'АБВГ'.indexOf(letter);
-                        if (index !== -1 && currentQuestion) {
-                            currentQuestion.options[index] = line.replace(/^[А-Г][\.)\s]*/, '').trim();
-                        }
-                    }
-                    // Поиск правильного ответа
-                    else if (line.toLowerCase().includes('правильный ответ')) {
-                        if (currentQuestion) {
-                            const match = line.match(/[А-Г]/);
-                            if (match) {
-                                currentQuestion.correct = 'АБВГ'.indexOf(match[0]);
-                            }
-                        }
-                    }
-                }
-                
-                if (currentQuestion) {
-                    parsedQuestions.push(currentQuestion);
-                }
-                
-                return parsedQuestions;
-            }
-
-            // Обработчик кнопки разбора текста
-            parseBtn.addEventListener('click', () => {
-                const text = importText.value.trim();
-                if (!text) {
-                    alert('Введите текст теста!');
-                    return;
-                }
-                
-                const parsedQuestions = parseTestText(text);
-                
-                if (parsedQuestions.length === 0) {
-                    alert('Не удалось разобрать текст. Проверьте формат.');
-                    return;
-                }
-                
-                // Очищаем существующие вопросы
-                questions = [];
-                questionsContainer.innerHTML = '';
-                
-                // Добавляем распарсенные вопросы
-                parsedQuestions.forEach((q, index) => {
-                    const questionId = Date.now() + Math.random() + index;
-                    const questionCard = document.createElement('div');
-                    questionCard.className = 'question-card';
-                    questionCard.dataset.id = questionId;
-                    
-                    questionCard.innerHTML = `
-                        <div class="question-header">
-                            <span class="question-number">Вопрос ${index + 1}</span>
-                            <button class="remove-question" onclick="removeQuestion(this)">×</button>
-                        </div>
-                        <textarea class="question-input" placeholder="Введите вопрос..." oninput="updateQuestion(this, 'text')">${q.text}</textarea>
-                        <div class="options-container">
-                            <input type="text" class="option-input" placeholder="Вариант А" value="${q.options[0]}" oninput="updateQuestion(this, 'option0')">
-                            <input type="text" class="option-input" placeholder="Вариант Б" value="${q.options[1]}" oninput="updateQuestion(this, 'option1')">
-                            <input type="text" class="option-input" placeholder="Вариант В" value="${q.options[2]}" oninput="updateQuestion(this, 'option2')">
-                            <input type="text" class="option-input" placeholder="Вариант Г" value="${q.options[3]}" oninput="updateQuestion(this, 'option3')">
-                        </div>
-                        <div class="correct-answer">
-                            <select class="correct-select" onchange="updateQuestion(this, 'correct')">
-                                <option value="">Выберите правильный ответ</option>
-                                <option value="0" ${q.correct === 0 ? 'selected' : ''}>Вариант А</option>
-                                <option value="1" ${q.correct === 1 ? 'selected' : ''}>Вариант Б</option>
-                                <option value="2" ${q.correct === 2 ? 'selected' : ''}>Вариант В</option>
-                                <option value="3" ${q.correct === 3 ? 'selected' : ''}>Вариант Г</option>
-                            </select>
-                        </div>
-                    `;
-                    
-                    questionsContainer.appendChild(questionCard);
-                    
-                    questions.push({
-                        id: questionId,
-                        text: q.text,
-                        options: [...q.options],
-                        correct: q.correct
-                    });
-                });
-                
-                // Переключаемся на ручной режим для просмотра
-                manualTab.click();
-                checkGenerateButton();
-                
-                alert(`Разобрано ${parsedQuestions.length} вопросов!`);
-            });
-
-// Функции для кодирования/декодирования теста
-function encodeTest(testData) {
-    try {
-        const jsonStr = JSON.stringify(testData);
-        return LZString.compressToEncodedURIComponent(jsonStr);
-    } catch (e) {
-        console.error('Ошибка кодирования:', e);
-        return null;
-    }
-}
-
-function decodeTest(encodedStr) {
-    try {
-        if (!encodedStr) return null;
-        const jsonStr = LZString.decompressFromEncodedURIComponent(encodedStr);
-        if (!jsonStr) return null;
-        return JSON.parse(jsonStr);
-    } catch (e) {
-        console.error('Ошибка декодирования:', e);
-        return null;
-    }
-}
-
-// Генерация теста
-function generateTest() {
-    const subject = document.querySelector('.tab.active') === manualTab ? 
-        subjectInput.value.trim() : importSubjectInput.value.trim();
-    
-    if (!subject) {
-        alert('Введите название предмета!');
-        return;
-    }
-    
-    if (questions.length === 0) {
-        alert('Добавьте хотя бы один вопрос!');
-        return;
-    }
-    
-    // Создаем объект теста
-    const testData = {
-        subject: subject,
-        questions: questions.map(q => ({
-            text: q.text,
-            options: [...q.options],
-            correct: q.correct
-        }))
-    };
-    
-    // Кодируем тест
-    const encodedTest = encodeTest(testData);
-    
-    if (!encodedTest) {
-        alert('Ошибка при создании теста. Попробуйте ещё раз.');
-        return;
-    }
-    
-    // Создаем ссылку на тест
-    const baseUrl = window.location.origin + window.location.pathname;
-    const testUrl = `${baseUrl}?test=${encodedTest}`;
-    
-    // Проверяем длину URL
-    if (testUrl.length > 2000) {
-        alert('Тест слишком большой! Уменьшите количество вопросов или длину текста.');
-        return;
-    }
-    
-    // Очищаем QR-код
-    qrCode.innerHTML = '';
-    
-    // Генерируем QR-код
-    QRCode.toCanvas(testUrl, { 
-        width: 200,
-        margin: 2,
-        color: {
-            dark: '#000000',
-            light: '#ffffff'
+        // Формируем имя файла: IMG-20261125-WA00XX.jpg (XX — двузначный номер)
+        function imgSrc(num) {
+            const padded = String(num).padStart(4, '0'); // 0044, 0023 и т.д.
+            return `img/IMG-20261125-WA${padded}.jpg`;
         }
-    }, function(err, canvas) {
-        if (err) {
-            console.error('Ошибка генерации QR-кода:', err);
-            qrCode.innerHTML = '<div style="color: red;">Ошибка генерации QR-кода</div>';
-            return;
-        }
-        
-        qrCode.appendChild(canvas);
-    });
-    
-    testLink.innerHTML = `<strong>Ссылка:</strong> ${testUrl}`;
-    
-    // Показываем QR-секцию
-    qrSection.style.display = 'block';
-    
-    alert('Тест успешно создан! QR-код готов к использованию.');
-}
 
-// Загрузка теста из URL
-function loadTestFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const testParam = urlParams.get('test');
-    
-    if (!testParam) return false;
-    
-    try {
-        // Декодируем тест
-        const testData = decodeTest(testParam);
-        
-        if (!testData) {
-            throw new Error('Не удалось декодировать тест');
-        }
-        
-        // Проверяем, что тест содержит нужные поля
-        if (!testData.subject || !Array.isArray(testData.questions) || testData.questions.length === 0) {
-            throw new Error('Некорректный формат теста');
-        }
-        
-        currentTest = testData;
-        currentQuestionIndex = 0;
-        userAnswers = new Array(testData.questions.length).fill(null);
-        testCompleted = false;
-        
-        // Показываем страницу теста
-        mainMenu.style.display = 'none';
-        testPage.classList.add('active');
-        
-        // Отображаем тест
-        renderTest();
-        
-        return true;
-    } catch (e) {
-        console.error('Ошибка загрузки теста:', e);
-        alert('Ошибка загрузки теста. Ссылка могла быть повреждена или тест слишком большой.');
-        return false;
-    }
-}
-            // Загрузка теста из URL
-            function loadTestFromUrl() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const testParam = urlParams.get('test');
-                
-                if (!testParam) return false;
-                
-                try {
-                    // Декодируем тест
-                    const testData = decodeTest(testParam);
-                    
-                    if (!testData) {
-                        throw new Error('Не удалось декодировать тест');
-                    }
-                    
-                    currentTest = testData;
-                    currentQuestionIndex = 0;
-                    userAnswers = new Array(testData.questions.length).fill(null);
-                    testCompleted = false;
-                    
-                    // Показываем страницу теста
-                    mainMenu.style.display = 'none';
-                    testPage.classList.add('active');
-                    
-                    // Отображаем тест
-                    renderTest();
-                    
-                    return true;
-                } catch (e) {
-                    console.error('Ошибка загрузки теста:', e);
-                    alert('Ошибка загрузки теста. Ссылка могла быть повреждена.');
-                    return false;
-                }
-            }
+        /* =========================
+           РЕНДЕР ГАЛЕРЕИ
+           ========================= */
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            let html = '';
 
-            // Отрисовка теста
-            function renderTest() {
-                if (!currentTest) return;
-                
-                const question = currentTest.questions[currentQuestionIndex];
-                
-                testSubject.textContent = currentTest.subject;
-                testProgress.textContent = `Вопрос ${currentQuestionIndex + 1} из ${currentTest.questions.length}`;
-                
-                let html = `
-                    <div class="test-question">
-                        <div class="test-question-text">${question.text}</div>
-                        <div class="test-options">
-                `;
-                
-                question.options.forEach((option, index) => {
-                    const letters = ['А', 'Б', 'В', 'Г'];
-                    html += `
-                        <div class="test-option">
-                            <input type="radio" 
-                                   name="question" 
-                                   id="option${index}" 
-                                   value="${index}"
-                                   ${userAnswers[currentQuestionIndex] === index ? 'checked' : ''}
-                                   onchange="saveAnswer(${index})">
-                            <label for="option${index}">${letters[index]}. ${option}</label>
-                        </div>
-                    `;
-                });
-                
+            // Сначала корсеты 44–52
+            corsetImages.forEach(item => {
                 html += `
+                    <div class="gallery-item">
+                        <img src="${imgSrc(item.num)}" alt="${item.name} — corset ${item.num}" loading="lazy" onerror="this.style.opacity=0.3; this.alt='Image not found: ${imgSrc(item.num)}'">
+                        <div class="overlay">
+                            <h3>${item.name}</h3>
+                            <span>Corset No. ${item.num} · ${item.type}</span>
                         </div>
-                    </div>
-                    <div class="test-navigation">
-                `;
-                
-                if (currentQuestionIndex > 0) {
-                    html += `<button class="nav-btn prev" onclick="prevQuestion()">← Предыдущий</button>`;
-                } else {
-                    html += `<button class="nav-btn prev" disabled>← Предыдущий</button>`;
-                }
-                
-                if (currentQuestionIndex < currentTest.questions.length - 1) {
-                    html += `<button class="nav-btn next" onclick="nextQuestion()">Следующий →</button>`;
-                } else {
-                    const allAnswered = userAnswers.every(a => a !== null);
-                    html += `<button class="nav-btn submit" onclick="submitTest()" ${!allAnswered ? 'disabled' : ''}>Завершить тест</button>`;
-                }
-                
-                html += `</div>`;
-                
-                testContent.innerHTML = html;
+                    </div>`;
+            });
+
+            // Затем журнальные 23–41
+            magazineImages.forEach(item => {
+                html += `
+                    <div class="gallery-item">
+                        <img src="${imgSrc(item.num)}" alt="${item.name} — magazine ${item.num}" loading="lazy" onerror="this.style.opacity=0.3; this.alt='Image not found: ${imgSrc(item.num)}'">
+                        <div class="overlay">
+                            <h3>${item.name}</h3>
+                            <span>No. ${item.num} · ${item.type}</span>
+                        </div>
+                    </div>`;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        /* =========================
+           ПЕРЕВОДЫ
+           ========================= */
+        const translations = {
+            en: {
+                nav_philosophy: 'Philosophy',
+                nav_gallery: 'Gallery',
+                nav_coming: 'Coming Soon',
+                hero_title: 'Gilded <em>Anatomy</em>',
+                hero_subtitle: "Art doesn't belong only in galleries. It belongs in motion. In everyday life. On the body.",
+                hero_cta: 'View Collection',
+                phil_1: 'Gilded Anatomy was created from a simple belief: <span class="highlight">art doesn\'t belong only in galleries.</span> It belongs in motion. In everyday life. On the body.',
+                phil_2: 'Rooted in a multidisciplinary approach to creation, Gilded Anatomy draws from sculptural practice, material exploration, and a deep respect for form. Each piece is an extension of artistic expression, designed not just to be worn, but to transform the wearer into a <span class="highlight">living work of art.</span>',
+                phil_3: "We see fashion as more than adornment. It's a medium. A statement. A way to embody identity, emotion, and story.",
+                phil_4: 'Why observe art from a distance when you can <span class="highlight">inhabit it?</span> Gilded Anatomy exists to dissolve that boundary, to bring art closer, make it tangible, and allow it to move freely through the world.',
+                phil_5: '<span class="highlight">This is not just something you wear. It\'s something you become.</span>',
+                gallery_title: 'Collection',
+                modal_title: 'Coming Soon',
+                modal_text: 'The new <span class="highlight">Gilded Anatomy</span> collection is on its way. Leave your email to be the first to know about the launch and get access to a private preview.',
+                modal_btn: 'Subscribe',
+                footer_copy: '&copy; 2026 Gilded Anatomy. All rights reserved.',
+                footer_extra: 'Created with respect for form and motion.',
+                email_placeholder: 'Your email'
+            },
+            ru: {
+                nav_philosophy: 'Философия',
+                nav_gallery: 'Галерея',
+                nav_coming: 'Coming Soon',
+                hero_title: 'Gilded <em>Anatomy</em>',
+                hero_subtitle: 'Искусство не принадлежит только галереям. Оно живёт в движении. В повседневности. На теле.',
+                hero_cta: 'Смотреть коллекцию',
+                phil_1: 'Gilded Anatomy создан из простого убеждения: <span class="highlight">искусство не принадлежит только галереям.</span> Оно принадлежит движению. Повседневной жизни. Телу.',
+                phil_2: 'В основе — междисциплинарный подход: скульптурная практика, исследование материалов и глубокое уважение к форме. Каждое изделие — продолжение художественного высказывания, созданное не просто для носки, а для того, чтобы превратить владельца в <span class="highlight">живое произведение искусства.</span>',
+                phil_3: 'Мы видим моду не просто как украшение. Это медиум. Заявление. Способ воплотить идентичность, эмоцию и историю.',
+                phil_4: 'Зачем наблюдать за искусством со стороны, если можно <span class="highlight">обитать в нём?</span> Gilded Anatomy существует, чтобы растворить эту границу, сделать искусство ближе, осязаемым и позволить ему свободно двигаться по миру.',
+                phil_5: '<span class="highlight">Это не просто то, что вы носите. Это то, чем вы становитесь.</span>',
+                gallery_title: 'Коллекция',
+                modal_title: 'Coming Soon',
+                modal_text: 'Новая коллекция <span class="highlight">Gilded Anatomy</span> уже на подходе. Оставьте свой email, чтобы первыми узнать о запуске и получить доступ к закрытому предпросмотру.',
+                modal_btn: 'Подписаться',
+                footer_copy: '&copy; 2026 Gilded Anatomy. Все права защищены.',
+                footer_extra: 'Создано с уважением к форме и движению.',
+                email_placeholder: 'Ваш email'
+            },
+            es: {
+                nav_philosophy: 'Filosofía',
+                nav_gallery: 'Galería',
+                nav_coming: 'Coming Soon',
+                hero_title: 'Gilded <em>Anatomy</em>',
+                hero_subtitle: 'El arte no pertenece solo a las galerías. Pertenece al movimiento. A la vida cotidiana. Al cuerpo.',
+                hero_cta: 'Ver colección',
+                phil_1: 'Gilded Anatomy nació de una convicción simple: <span class="highlight">el arte no pertenece solo a las galerías.</span> Pertenece al movimiento. A la vida cotidiana. Al cuerpo.',
+                phil_2: 'Con un enfoque multidisciplinario, Gilded Anatomy se nutre de la práctica escultórica, la exploración de materiales y un profundo respeto por la forma. Cada pieza es una extensión de la expresión artística, diseñada no solo para llevarse, sino para transformar a quien la porta en una <span class="highlight">obra de arte viva.</span>',
+                phil_3: 'Vemos la moda como algo más que adorno. Es un medio. Una declaración. Una forma de encarnar identidad, emoción e historia.',
+                phil_4: '¿Por qué observar el arte desde la distancia cuando puedes <span class="highlight">habitarlo?</span> Gilded Anatomy existe para disolver esa frontera, acercar el arte, hacerlo tangible y permitirle moverse libremente por el mundo.',
+                phil_5: '<span class="highlight">Esto no es solo algo que llevas. Es algo en lo que te conviertes.</span>',
+                gallery_title: 'Colección',
+                modal_title: 'Coming Soon',
+                modal_text: 'La nueva colección de <span class="highlight">Gilded Anatomy</span> está en camino. Deja tu email para ser el primero en saber del lanzamiento y acceder a una vista previa privada.',
+                modal_btn: 'Suscribirse',
+                footer_copy: '&copy; 2026 Gilded Anatomy. Todos los derechos reservados.',
+                footer_extra: 'Creado con respeto por la forma y el movimiento.',
+                email_placeholder: 'Tu email'
             }
+        };
 
-            // Сохранение ответа
-            window.saveAnswer = function(answerIndex) {
-                userAnswers[currentQuestionIndex] = answerIndex;
-                
-                // Обновляем кнопку завершения если это последний вопрос
-                if (currentQuestionIndex === currentTest.questions.length - 1) {
-                    const allAnswered = userAnswers.every(a => a !== null);
-                    const submitBtn = document.querySelector('.nav-btn.submit');
-                    if (submitBtn) {
-                        submitBtn.disabled = !allAnswered;
-                    }
+        let currentLang = 'en';
+
+        function applyLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) {
+                    el.innerHTML = t[key];
                 }
-            };
+            });
+            // Placeholder для email
+            const emailInput = document.getElementById('emailInput');
+            if (emailInput) emailInput.placeholder = t.email_placeholder;
+            // Обновляем активную кнопку
+            document.querySelectorAll('.lang-switcher button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            // Меняем lang у html
+            document.documentElement.lang = lang;
+        }
 
-            // Следующий вопрос
-            window.nextQuestion = function() {
-                if (currentQuestionIndex < currentTest.questions.length - 1) {
-                    currentQuestionIndex++;
-                    renderTest();
+        /* =========================
+           ИНИЦИАЛИЗАЦИЯ
+           ========================= */
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGallery();
+
+            const comingSoonBtn = document.getElementById('comingSoonBtn');
+            const banner = document.getElementById('comingSoonBanner');
+            const closeBtn = document.getElementById('closeBanner');
+            const subscribeForm = document.getElementById('subscribeForm');
+            const bannerImage = document.getElementById('bannerImage');
+
+            // Проверка: если баннерное изображение не найдено — показываем заглушку
+            bannerImage.addEventListener('error', () => {
+                bannerImage.style.opacity = '0.3';
+                bannerImage.alt = 'Image not found: img/IMG-20261125-WA0042.jpg';
+            });
+
+            // Открытие модального окна
+            comingSoonBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                banner.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+
+            // Закрытие по крестику
+            closeBtn.addEventListener('click', () => {
+                banner.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            // Закрытие по клику на фон
+            banner.addEventListener('click', (e) => {
+                if (e.target === banner) {
+                    banner.classList.remove('active');
+                    document.body.style.overflow = '';
                 }
-            };
+            });
 
-            // Предыдущий вопрос
-            window.prevQuestion = function() {
-                if (currentQuestionIndex > 0) {
-                    currentQuestionIndex--;
-                    renderTest();
+            // Закрытие по Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && banner.classList.contains('active')) {
+                    banner.classList.remove('active');
+                    document.body.style.overflow = '';
                 }
-            };
+            });
 
-            // Завершение теста
-            window.submitTest = function() {
-                if (testCompleted) return;
-                
-                // Подсчет результатов
-                let correctCount = 0;
-                currentTest.questions.forEach((q, index) => {
-                    if (userAnswers[index] === q.correct) {
-                        correctCount++;
-                    }
-                });
-                
-                const totalQuestions = currentTest.questions.length;
-                const percentage = Math.round((correctCount / totalQuestions) * 100);
-                
-                let message;
-                if (percentage >= 90) message = 'Отлично! Ты настоящий эксперт! 🌟';
-                else if (percentage >= 75) message = 'Хорошо! Но есть куда расти! 📚';
-                else if (percentage >= 50) message = 'Неплохо, стоит повторить материал! 📖';
-                else message = 'Нужно больше практики! Ты справишься! 💪';
-                
-                testContent.innerHTML = `
-                    <div class="test-result">
-                        <div style="font-size: 80px; margin-bottom: 20px;">📊</div>
-                        <div class="result-score">${correctCount} / ${totalQuestions}</div>
-                        <div class="result-message">${message}</div>
-                        <div style="margin: 30px 0; font-size: 18px; color: #666;">
-                            Правильных ответов: ${correctCount} из ${totalQuestions} (${percentage}%)
-                        </div>
-                        <button class="back-to-menu" onclick="backToMenu()">← Вернуться в меню</button>
-                    </div>
-                `;
-                
-                testCompleted = true;
-            };
+            // Форма подписки
+            subscribeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const input = subscribeForm.querySelector('input');
+                const btn = subscribeForm.querySelector('button[type="submit"]');
+                if (input.value) {
+                    const originalText = btn.textContent;
+                    btn.textContent = currentLang === 'ru' ? 'Спасибо!' : (currentLang === 'es' ? '¡Gracias!' : 'Thank you!');
+                    btn.style.background = '#b89b7a';
+                    input.value = '';
+                    input.disabled = true;
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        banner.classList.remove('active');
+                        document.body.style.overflow = '';
+                        setTimeout(() => {
+                            btn.textContent = originalText;
+                            btn.style.background = '';
+                            input.disabled = false;
+                            btn.disabled = false;
+                        }, 400);
+                    }, 1400);
+                }
+            });
 
-            // Возврат в меню
-            window.backToMenu = function() {
-                testPage.classList.remove('active');
-                mainMenu.style.display = 'grid';
-                currentTest = null;
-                
-                // Убираем параметры из URL
-                const url = new URL(window.location);
-                url.searchParams.delete('test');
-                window.history.replaceState({}, '', url);
-            };
-
-            // Копирование ссылки
-            copyBtn.addEventListener('click', () => {
-                const linkText = testLink.textContent.replace('Ссылка:', '').trim();
-                navigator.clipboard.writeText(linkText).then(() => {
-                    alert('Ссылка скопирована!');
-                }).catch(() => {
-                    alert('Не удалось скопировать ссылку');
+            // Переключатель языков
+            document.querySelectorAll('.lang-switcher button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    applyLanguage(btn.dataset.lang);
                 });
             });
 
-            // Добавление первого вопроса при загрузке
-            addQuestion();
+            // Плавный скролл
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#') {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
 
-            // Обработчик кнопки добавления вопроса
-            addQuestionBtn.addEventListener('click', addQuestion);
-
-            // Обработчик кнопки генерации
-            generateBtn.addEventListener('click', generateTest);
-
-            // Загружаем тест из URL при старте
-            if (!loadTestFromUrl()) {
-                mainMenu.style.display = 'grid';
-            }
-        })();
+            // Применяем язык по умолчанию
+            applyLanguage('en');
+        });
     </script>
 </body>
 </html>
