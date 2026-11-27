@@ -12,11 +12,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-        /*
-            --bg-color: #f9f7f4;
-            --text-dark: #1a1a1a;
-            --text-light: #6b6b6b;
-            --accent: #b89b7a;*/
             --bg-color: #010101;
             --text-dark: #F2D888;
             --text-light: #F2B05E;
@@ -70,19 +65,6 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid #f2d888;
             transition: var(--transition);
-            /*
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            background: rgba(249, 247, 244, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: var(--transition);*/
         }
 
         .logo {
@@ -161,6 +143,8 @@
             cursor: pointer;
             background: none;
             border: none;
+            position: relative;
+            z-index: 1600;
         }
         .burger span { width: 25px; height: 1px; background: var(--text-dark); transition: var(--transition); }
 
@@ -174,7 +158,7 @@
             text-align: center;
             padding: 8rem 2rem 4rem;
             position: relative;
-            background:url('img/IMG-20261125-WA0034_.jpg') no-repeat right center;
+            background: url('img/IMG-20261125-WA0034_.jpg') no-repeat right center;
         }
         .hero h1 { font-size: clamp(3rem, 8vw, 6rem); line-height: 1.1; margin-bottom: 1.5rem; max-width: 900px; }
         .hero h1 em { font-style: italic; color: var(--accent); }
@@ -190,9 +174,50 @@
         }
         .hero-cta:hover { background: var(--text-dark); color: var(--bg-color); }
 
-        /* PHILOSOPHY */
-        .philosophy { padding: 6rem 2rem; max-width: 900px; margin: 0 auto; text-align: center; }
-        .philosophy p {
+        /* ABOUT */
+        .about {
+            padding: 6rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+        .about-photo {
+            position: relative;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            border: 1px solid var(--accent);
+        }
+        .about-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .about-photo:hover img { transform: scale(1.04); }
+        .about-text p {
+            font-family: var(--font-serif);
+            font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-bottom: 1.2rem;
+            font-weight: 300;
+        }
+        .about-text .highlight { font-style: italic; color: var(--accent); }
+
+        /* GALLERY PROMO */
+        .gallery-promo {
+            padding: 6rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .gallery-promo p {
             font-family: var(--font-serif);
             font-size: clamp(1.2rem, 2.5vw, 1.8rem);
             line-height: 1.5;
@@ -200,32 +225,41 @@
             margin-bottom: 1.5rem;
             font-weight: 300;
         }
-        .philosophy .highlight { font-style: italic; color: var(--accent); }
+        .gallery-promo .big-coming {
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text-dark);
+            border-top: 1px solid var(--accent);
+            border-bottom: 1px solid var(--accent);
+            padding: 1.5rem 0;
+            margin: 2rem 0;
+        }
 
-        /* GALLERY */
-        .gallery-section { padding: 4rem 2rem 6rem; max-width: 1400px; margin: 0 auto; }
-        .gallery-grid {
+        /* COLLECTION */
+        .collection-section { padding: 4rem 2rem 6rem; max-width: 1400px; margin: 0 auto; }
+        .collection-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
-        .gallery-item {
+        .collection-item {
             position: relative;
             overflow: hidden;
             aspect-ratio: 3/4;
             background: #eae5df;
             cursor: pointer;
         }
-        .gallery-item img {
+        .collection-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .gallery-item:hover img { transform: scale(1.05); }
+        .collection-item:hover img { transform: scale(1.05); }
 
-        /* Надпись Coming Soon при наведении */
-        .gallery-item .overlay {
+        .collection-item .overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%;
@@ -236,11 +270,11 @@
             background: rgba(1, 1, 1, 0.55);
             opacity: 0;
             transition: opacity var(--transition);
-            pointer-events: none; /* чтобы клик проходил на карточку */
+            pointer-events: none;
         }
-        .gallery-item:hover .overlay { opacity: 1; }
+        .collection-item:hover .overlay { opacity: 1; }
 
-        .overlay .coming-soon-label {
+        .overlay .collection-label {
             font-family: var(--font-serif);
             font-size: clamp(1.4rem, 3vw, 2.2rem);
             letter-spacing: 0.25em;
@@ -251,10 +285,11 @@
             transform: translateY(10px);
             transition: transform var(--transition);
         }
-        .gallery-item:hover .overlay .coming-soon-label {
+        .collection-item:hover .overlay .collection-label {
             transform: translateY(0);
         }
- /* Мобильное меню */
+
+        /* МОБИЛЬНОЕ МЕНЮ */
         .mobile-menu {
             position: fixed;
             top: 0;
@@ -267,7 +302,6 @@
             z-index: 1500;
             padding: 6rem 2rem 2rem;
             overflow-y: auto;
-            /* Скрыто по умолчанию */
             display: none;
             transform: translateX(100%);
             transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -275,6 +309,38 @@
         .mobile-menu.open {
             display: block;
             transform: translateX(0);
+        }
+        .mobile-menu ul {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+        .mobile-menu a,
+        .mobile-menu .nav-coming-soon {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-dark);
+            display: block;
+        }
+        .mobile-menu .nav-coming-soon {
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 0;
+            border: none;
+            border-radius: 0;
+            color: var(--accent);
+        }
+        .mobile-menu .nav-coming-soon:hover {
+            background: none;
+            color: var(--text-dark);
+        }
+        .mobile-menu .lang-switcher {
+            margin-left: 0;
+            gap: 1rem;
+        }
+        .mobile-menu .lang-switcher button {
+            font-size: 0.8rem;
         }
 
         .mobile-menu-backdrop {
@@ -292,16 +358,10 @@
             opacity: 1;
         }
 
-        /* Анимация бургера в крестик */
-        .burger.active span:nth-child(1) {
-            transform: translateY(6px) rotate(45deg);
-        }
-        .burger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .burger.active span:nth-child(3) {
-            transform: translateY(-6px) rotate(-45deg);
-        }
+        .burger.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+        .burger.active span:nth-child(2) { opacity: 0; }
+        .burger.active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
         /* BANNER / MODAL */
         .banner-overlay {
             position: fixed;
@@ -391,6 +451,55 @@
         }
         .subscribe-form button[type="submit"]:hover { background: var(--accent); }
 
+        /* LIGHTBOX */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(1, 1, 1, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            cursor: zoom-out;
+        }
+        .lightbox.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .lightbox-img {
+            max-width: 92vw;
+            max-height: 92vh;
+            object-fit: contain;
+            border: 1px solid var(--accent);
+            transform: scale(0.96);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: default;
+        }
+        .lightbox.active .lightbox-img {
+            transform: scale(1);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2.4rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            line-height: 1;
+            transition: var(--transition);
+            z-index: 10;
+        }
+        .lightbox-close:hover {
+            transform: rotate(90deg);
+            color: var(--accent);
+        }
+
         /* FOOTER */
         footer {
             padding: 4rem 2rem;
@@ -413,35 +522,36 @@
         @media (max-width: 900px) {
             nav ul { gap: 1.2rem; }
             .lang-switcher { margin-left: 0.5rem; }
+            .about-content { gap: 2rem; }
         }
+
+        @media (min-width: 769px) {
+            .mobile-menu,
+            .mobile-menu-backdrop { display: none !important; }
+        }
+
         @media (max-width: 768px) {
             header { padding: 1rem 1.5rem; flex-wrap: wrap; gap: 1rem; }
             nav ul { display: none; }
             .burger { display: flex; }
-            .hero { padding-top: 6rem; 
+            .hero {
                 padding-top: 6rem;
                 background: url('img/IMG-20261125-WA0034_dark.jpg') no-repeat center center;
-                background-size: cover;}
+                background-size: cover;
+            }
             .banner-content { padding: 1.5rem 1.5rem 2rem; }
-            .gallery-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
-            .philosophy { padding: 4rem 1.5rem; }
+            .collection-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .about { padding: 4rem 1.5rem; }
+            .about-content { grid-template-columns: 1fr; gap: 2rem; }
+            .about-photo { max-width: 320px; margin: 0 auto; }
             .lang-switcher { display: flex; }
-           /* .mobile-menu,
-            .mobile-menu-backdrop { display: none !important; }*/
-        }
-        @media (max-width: 480px) {
-            .gallery-grid { grid-template-columns: 1fr; }
         }
 
-        /* Плавное появление текста при смене языка */
-        [data-i18n] { transition: opacity 0.3s ease; }
-                /* На десктопе мобильное меню не нужно */
-        @media (min-width: 769px) {
-            .mobile-menu,
-            .mobile-menu-backdrop {
-                display: none !important;
-            }
+        @media (max-width: 480px) {
+            .collection-grid { grid-template-columns: 1fr; }
         }
+
+        [data-i18n] { transition: opacity 0.3s ease; }
     </style>
 </head>
 <body>
@@ -451,9 +561,10 @@
         <div class="logo">Gilden Anatomy</div>
         <nav>
             <ul>
-                <li><a href="#philosophy" data-i18n="nav_philosophy">Philosophy</a></li>
+                <li><a href="#about" data-i18n="nav_about">About</a></li>
+                <li><a href="#collection" data-i18n="nav_collection">Collection</a></li>
                 <li><a href="#gallery" data-i18n="nav_gallery">Gallery</a></li>
-                <li><button class="nav-coming-soon" id="comingSoonBtn" data-i18n="nav_coming">Coming Soon</button></li>
+              <!--  <li><button class="nav-coming-soon" id="comingSoonBtn" data-i18n="nav_coming">Coming Soon</button></li> -->
                 <li class="lang-switcher">
                     <button data-lang="en" class="active">EN</button>
                     <button data-lang="ru">RU</button>
@@ -465,12 +576,14 @@
             <span></span><span></span><span></span>
         </button>
     </header>
+
     <!-- Мобильное меню -->
     <div class="mobile-menu" id="mobileMenu">
         <ul>
-            <li><a href="#philosophy" data-i18n="nav_philosophy">Philosophy</a></li>
+            <li><a href="#about" data-i18n="nav_about">About</a></li>
+            <li><a href="#collection" data-i18n="nav_collection">Collection</a></li>
             <li><a href="#gallery" data-i18n="nav_gallery">Gallery</a></li>
-            <li><button class="nav-coming-soon" id="comingSoonBtnMobile" data-i18n="nav_coming">Coming Soon</button></li>
+           <!-- <li><button class="nav-coming-soon" id="comingSoonBtnMobile" data-i18n="nav_coming">Coming Soon</button></li>-->
             <li class="lang-switcher">
                 <button data-lang="en" class="active">EN</button>
                 <button data-lang="ru">RU</button>
@@ -479,31 +592,49 @@
         </ul>
     </div>
     <div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
+
     <!-- HERO -->
     <section class="hero">
         <h1 data-i18n="hero_title">Gilded <em>Anatomy</em></h1>
         <p data-i18n="hero_subtitle">Art doesn't belong only in galleries. It belongs in motion. In everyday life. On the body.</p>
-        <a href="#gallery" class="hero-cta" data-i18n="hero_cta">View Collection</a>
+        <a href="#collection" class="hero-cta" data-i18n="hero_cta">View Collection</a>
     </section>
 
-    <!-- PHILOSOPHY -->
-    <section class="philosophy" id="philosophy">
-        <p data-i18n="phil_1">Gilded Anatomy was created from a simple belief: <span class="highlight">art doesn't belong only in galleries.</span> It belongs in motion. In everyday life. On the body.</p>
-        <p data-i18n="phil_2">Rooted in a multidisciplinary approach to creation, Gilded Anatomy draws from sculptural practice, material exploration, and a deep respect for form. Each piece is an extension of artistic expression, designed not just to be worn, but to transform the wearer into a <span class="highlight">living work of art.</span></p>
-        <p data-i18n="phil_3">We see fashion as more than adornment. It's a medium. A statement. A way to embody identity, emotion, and story.</p>
-        <p data-i18n="phil_4">Why observe art from a distance when you can <span class="highlight">inhabit it?</span> Gilded Anatomy exists to dissolve that boundary, to bring art closer, make it tangible, and allow it to move freely through the world.</p>
-        <p data-i18n="phil_5"><span class="highlight">This is not just something you wear. It's something you become.</span></p>
+    <!-- ABOUT -->
+    <section class="about" id="about">
+        <h2 class="section-title" data-i18n="about_title">About the Author</h2>
+        <div class="about-content">
+            <div class="about-photo">
+                <img src="img/IMG-20261125-WA0040.jpg" alt="Author of Gilded Anatomy" onerror="this.style.opacity=0.3; this.alt='Photo not found: img/IMG-20261125-WA0040.jpg'">
+            </div>
+            <div class="about-text">
+                <p data-i18n="about_p1">Born in 1984 in Siberia, USSR, <span class="highlight">Svetlana Bardakova</span> is a contemporary artist and sculptor whose creative journey spans continents, cultures, and artistic disciplines.</p>
+                <p data-i18n="about_p2">Having lived and worked in Russia, Indonesia, Argentina, Bolivia, Chile, Taiwan, England, and Spain, her practice has been shaped by a rich and diverse range of cultural experiences, broadening her artistic perspective and language.</p>
+                <p data-i18n="about_p3">She has organised and participated in international art and sculpture exhibitions in Moscow, Ubud, Buenos Aires, Málaga, and Marbella. Her works are represented in leading galleries and private collections worldwide, including Dubai, Paris, London, Moscow, Saint Paul de Vence, Madrid, Marbella, and Miami.</p>
+                <p data-i18n="about_p4">Working across mixed media, Svetlana explores a wide spectrum of materials — from paper and crayons to plaster, metal, and glass. Constantly seeking new materials and forms of expression, she approaches her practice with an experimental mindset, embracing the freedom to move beyond conventional boundaries between materials, disciplines, and artistic forms.</p>
+                <p data-i18n="about_p5">Through casting and sculptural construction, her practice also extends into <span class="highlight">wearable art</span>, exploring the dialogue between sculpture, the human body, and fashion. Her vision reaches beyond traditional gallery spaces, towards sculptural creations that can inhabit new contexts — from art installations and exhibitions to couture, red-carpet appearances, and major cultural events.</p>
+                <p data-i18n="about_p6">For Gilded Anatomy, art is a continuous process of translating an inner vision into tangible form, allowing creativity to flow freely between materials, spaces, and life experiences.</p>
+            </div>
+        </div>
     </section>
 
-        <!-- GALLERY -->
-    <section class="gallery-section" id="gallery">
-        <h2 class="section-title" data-i18n="gallery_title">Collection</h2>
-        <div class="gallery-grid" id="galleryGrid">
+    <!-- GALLERY -->
+    <section class="gallery-promo" id="gallery">
+        <h2 class="section-title" data-i18n="gallery_title">Gallery</h2>
+        <p data-i18n="gallery_p1">The full gallery of Gilded Anatomy is currently in preparation. A curated selection of editorial images, sculptural studies, and behind-the-scenes moments will be available soon.</p>
+        <div class="big-coming" data-i18n="gallery_coming">Coming Soon</div>
+        <p data-i18n="gallery_p2">Leave your email to be the first to know when the gallery opens.</p>
+    </section>
+
+    <!-- COLLECTION -->
+    <section class="collection-section" id="collection">
+        <h2 class="section-title" data-i18n="collection_title">Collection</h2>
+        <div class="collection-grid" id="collectionGrid">
             <!-- Карточки добавляются через JS -->
         </div>
     </section>
 
-    <!-- MODAL -->
+    <!-- MODAL COMING SOON -->
     <div class="banner-overlay" id="comingSoonBanner">
         <div class="banner-content">
             <button class="close-btn" id="closeBanner" aria-label="Close">&times;</button>
@@ -517,6 +648,12 @@
         </div>
     </div>
 
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+        <img src="" alt="" class="lightbox-img" id="lightboxImg">
+    </div>
+
     <!-- FOOTER -->
     <footer>
         <div class="footer-logo">Gilded Anatomy</div>
@@ -526,9 +663,8 @@
 
     <script>
         /* =========================
-           ДАННЫЕ ДЛЯ ГАЛЕРЕИ
+           ДАННЫЕ ДЛЯ COLLECTION
            ========================= */
-        // Изделия (корсеты) с номерами 44–52
         const corsetImages = [
             { num: '44', name: 'Sculptural Form',    type: 'Author Corset' },
             { num: '45', name: 'Gilded Touch',        type: 'Handmade Corset' },
@@ -540,7 +676,7 @@
             { num: '51', name: 'Kinetic Shell',       type: 'Textured Corset' },
             { num: '52', name: 'Final Study',         type: 'Author Corset' }
         ];
-        // Журнальные изображения (альбомные) 23–41
+
         const magazineImages = [
             { num: '23', name: 'Editorial I',   type: 'Magazine' },
             { num: '24', name: 'Editorial II',  type: 'Magazine' },
@@ -552,70 +688,53 @@
             { num: '30', name: 'Editorial VIII',type: 'Magazine' }
         ];
 
-        // Формируем имя файла: IMG-20261125-WA00XX.jpg (XX — двузначный номер)
         function imgSrc(num) {
-            const padded = String(num).padStart(4, '0'); // 0044, 0023 и т.д.
+            const padded = String(num).padStart(4, '0');
             return `img/IMG-20261125-WA${padded}.jpg`;
         }
 
         /* =========================
-           РЕНДЕР ГАЛЕРЕИ
+           РЕНДЕР COLLECTION
            ========================= */
-        function renderGallery() {
-            const grid = document.getElementById('galleryGrid');
+        function renderCollection() {
+            const grid = document.getElementById('collectionGrid');
             let html = '';
 
-            // Корсеты 44–52
-            /*corsetImages.forEach(item => {
-                html += `
-                    <div class="gallery-item" data-img="${imgSrc(item.num)}" data-title="${item.name}">
-                        <img src="${imgSrc(item.num)}" alt="${item.name} — corset ${item.num}" loading="lazy" onerror="this.style.opacity=0.3; this.alt='Image not found: ${imgSrc(item.num)}'">
-                        <div class="overlay">
-                            <span class="coming-soon-label" data-i18n="coming_soon_label">Coming Soon</span>
-                        </div>
-                    </div>`;
-            });
-*/
-            // Журнальные 23–41
             magazineImages.forEach(item => {
                 html += `
-                    <div class="gallery-item" data-img="${imgSrc(item.num)}" data-title="${item.name}">
+                    <div class="collection-item" data-img="${imgSrc(item.num)}" data-title="${item.name}">
                         <img src="${imgSrc(item.num)}" alt="${item.name} — magazine ${item.num}" loading="lazy" onerror="this.style.opacity=0.3; this.alt='Image not found: ${imgSrc(item.num)}'">
                         <div class="overlay">
-                            <span class="coming-soon-label" data-i18n="coming_soon_label">Coming Soon</span>
+                            <span class="collection-label" data-i18n="collection_label">Collection</span>
                         </div>
                     </div>`;
             });
 
             grid.innerHTML = html;
 
-            // Применяем текущий язык к новым элементам
             applyLanguage(currentLang);
 
-            // Обработчик клика по любой карточке — открывает модальное окно
-            grid.querySelectorAll('.gallery-item').forEach(card => {
+            grid.querySelectorAll('.collection-item').forEach(card => {
                 card.addEventListener('click', () => {
-                    openBanner(null);
+                    const img = card.querySelector('img');
+                    openLightbox(card.dataset.img, img ? img.alt : '');
                 });
             });
         }
 
         /* =========================
-           ОТКРЫТИЕ / ЗАКРЫТИЕ МОДАЛЬНОГО ОКНА
+           БАННЕР COMING SOON
            ========================= */
         function openBanner(imageSrc) {
             const banner = document.getElementById('comingSoonBanner');
             const bannerImage = document.getElementById('bannerImage');
 
-            // Если передан src — подменяем изображение в модалке
             if (imageSrc) {
                 bannerImage.src = imageSrc;
-                bannerImage.style.display = 'block';
             } else {
-                // По умолчанию баннерное изображение
                 bannerImage.src = 'img/IMG-20261125-WA0042.jpg';
-                bannerImage.style.display = 'block';
             }
+            bannerImage.style.display = 'block';
 
             banner.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -624,77 +743,122 @@
         function closeBanner() {
             const banner = document.getElementById('comingSoonBanner');
             banner.classList.remove('active');
-            document.body.style.overflow = '';
+            const mobileMenu = document.getElementById('mobileMenu');
+            const lightbox = document.getElementById('lightbox');
+            if (!mobileMenu?.classList.contains('open') && !lightbox?.classList.contains('active')) {
+                document.body.style.overflow = '';
+            }
         }
+
+        /* =========================
+           ЛАЙТБОКС
+           ========================= */
+        function openLightbox(src, alt) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            img.src = src;
+            img.alt = alt || '';
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            const banner = document.getElementById('comingSoonBanner');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (!banner.classList.contains('active') && !mobileMenu?.classList.contains('open')) {
+                document.body.style.overflow = '';
+            }
+        }
+
         /* =========================
            ПЕРЕВОДЫ
            ========================= */
         const translations = {
             en: {
-                nav_philosophy: 'Philosophy',
+                nav_about: 'About',
+                nav_collection: 'Collection',
                 nav_gallery: 'Gallery',
                 nav_coming: 'Coming Soon',
                 hero_title: 'Gilded <em>Anatomy</em>',
                 hero_subtitle: "Art doesn't belong only in galleries. It belongs in motion. In everyday life. On the body.",
                 hero_cta: 'View Collection',
-                phil_1: 'Gilded Anatomy was created from a simple belief: <span class="highlight">art doesn\'t belong only in galleries.</span> It belongs in motion. In everyday life. On the body.',
-                phil_2: 'Rooted in a multidisciplinary approach to creation, Gilded Anatomy draws from sculptural practice, material exploration, and a deep respect for form. Each piece is an extension of artistic expression, designed not just to be worn, but to transform the wearer into a <span class="highlight">living work of art.</span>',
-                phil_3: "We see fashion as more than adornment. It's a medium. A statement. A way to embody identity, emotion, and story.",
-                phil_4: 'Why observe art from a distance when you can <span class="highlight">inhabit it?</span> Gilded Anatomy exists to dissolve that boundary, to bring art closer, make it tangible, and allow it to move freely through the world.',
-                phil_5: '<span class="highlight">This is not just something you wear. It\'s something you become.</span>',
-                gallery_title: 'Collection',
+                about_title: 'About the Author',
+                                about_p1: 'Born in 1984 in Siberia, USSR, <span class="highlight">Svetlana Bardakova</span> is a contemporary artist and sculptor whose creative journey spans continents, cultures, and artistic disciplines.',
+                about_p2: 'Having lived and worked in Russia, Indonesia, Argentina, Bolivia, Chile, Taiwan, England, and Spain, her practice has been shaped by a rich and diverse range of cultural experiences, broadening her artistic perspective and language.',
+                about_p3: 'She has organised and participated in international art and sculpture exhibitions in Moscow, Ubud, Buenos Aires, Málaga, and Marbella. Her works are represented in leading galleries and private collections worldwide, including Dubai, Paris, London, Moscow, Saint Paul de Vence, Madrid, Marbella, and Miami.',
+                about_p4: 'Working across mixed media, Svetlana explores a wide spectrum of materials — from paper and crayons to plaster, metal, and glass. Constantly seeking new materials and forms of expression, she approaches her practice with an experimental mindset, embracing the freedom to move beyond conventional boundaries between materials, disciplines, and artistic forms.',
+                about_p5: 'Through casting and sculptural construction, her practice also extends into <span class="highlight">wearable art</span>, exploring the dialogue between sculpture, the human body, and fashion. Her vision reaches beyond traditional gallery spaces, towards sculptural creations that can inhabit new contexts — from art installations and exhibitions to couture, red-carpet appearances, and major cultural events.',
+                about_p6: 'For Gilded Anatomy, art is a continuous process of translating an inner vision into tangible form, allowing creativity to flow freely between materials, spaces, and life experiences.',
+                gallery_title: 'Gallery',
+                gallery_p1: 'The full gallery of Gilded Anatomy is currently in preparation. A curated selection of editorial images, sculptural studies, and behind-the-scenes moments will be available soon.',
+                gallery_coming: 'Coming Soon',
+                gallery_p2: 'Leave your email to be the first to know when the gallery opens.',
+                collection_title: 'Collection',
+                collection_label: 'Collection',
                 modal_title: 'Coming Soon',
                 modal_text: 'The new <span class="highlight">Gilded Anatomy</span> collection is on its way. Leave your email to be the first to know about the launch and get access to a private preview.',
                 modal_btn: 'Subscribe',
                 footer_copy: '&copy; 2026 Gilded Anatomy. All rights reserved.',
                 footer_extra: 'Created with respect for form and motion.',
-                email_placeholder: 'Your email',
-                // ... существующие ключи ...
-                coming_soon_label: 'Coming Soon'
+                email_placeholder: 'Your email'
             },
             ru: {
-                nav_philosophy: 'Философия',
+                nav_about: 'О авторе',
+                nav_collection: 'Коллекция',
                 nav_gallery: 'Галерея',
                 nav_coming: 'Coming Soon',
                 hero_title: 'Gilded <em>Anatomy</em>',
                 hero_subtitle: 'Искусство не принадлежит только галереям. Оно живёт в движении. В повседневности. На теле.',
                 hero_cta: 'Смотреть коллекцию',
-                phil_1: 'Gilded Anatomy создан из простого убеждения: <span class="highlight">искусство не принадлежит только галереям.</span> Оно принадлежит движению. Повседневной жизни. Телу.',
-                phil_2: 'В основе — междисциплинарный подход: скульптурная практика, исследование материалов и глубокое уважение к форме. Каждое изделие — продолжение художественного высказывания, созданное не просто для носки, а для того, чтобы превратить владельца в <span class="highlight">живое произведение искусства.</span>',
-                phil_3: 'Мы видим моду не просто как украшение. Это медиум. Заявление. Способ воплотить идентичность, эмоцию и историю.',
-                phil_4: 'Зачем наблюдать за искусством со стороны, если можно <span class="highlight">обитать в нём?</span> Gilded Anatomy существует, чтобы растворить эту границу, сделать искусство ближе, осязаемым и позволить ему свободно двигаться по миру.',
-                phil_5: '<span class="highlight">Это не просто то, что вы носите. Это то, чем вы становитесь.</span>',
-                gallery_title: 'Коллекция',
+                about_title: 'Об авторе',
+                                about_p1: 'Светлана Бардакова родилась в 1984 году в Сибири, СССР. Она — современная художница и скульптор, чей творческий путь охватывает континенты, культуры и художественные дисциплины.',
+                about_p2: 'Живя и работая в России, Индонезии, Аргентине, Боливии, Чили, Тайване, Англии и Испании, она сформировала свою практику под влиянием богатого и разнообразного культурного опыта, расширившего её художественный взгляд и язык.',
+                about_p3: 'Она организовывала и участвовала в международных художественных и скульптурных выставках в Москве, Убуде, Буэнос-Айресе, Малаге и Марбелье. Её работы представлены в ведущих галереях и частных коллекциях по всему миру, включая Дубай, Париж, Лондон, Москву, Сен-Поль-де-Ванс, Мадрид, Марбелью и Майами.',
+                about_p4: 'Работая в смешанных техниках, Светлана исследует широкий спектр материалов — от бумаги и мелков до гипса, металла и стекла. Постоянно находя новые материалы и формы выражения, она подходит к своей практике с экспериментальным мышлением, позволяя себе выходить за привычные границы между материалами, дисциплинами и художественными формами.',
+                about_p5: 'Через литьё и скульптурное конструирование её практика также распространяется на <span class="highlight">носимое искусство</span>, исследуя диалог между скульптурой, человеческим телом и модой. Её видение выходит за пределы традиционных галерейных пространств — к скульптурным произведениям, способным существовать в новых контекстах: от арт-инсталляций и выставок до кутюра, выходов на красную дорожку и крупных культурных событий.',
+                about_p6: 'Для Gilded Anatomy искусство — это непрерывный процесс перевода внутреннего видения в осязаемую форму, позволяющий творчеству свободно течь между материалами, пространствами и жизненным опытом.',
+                gallery_title: 'Галерея',
+                gallery_p1: 'Полная галерея Gilded Anatomy сейчас готовится. Кураторская подборка редакционных изображений, скульптурных этюдов и закулисных моментов появится совсем скоро.',
+                gallery_coming: 'Скоро',
+                gallery_p2: 'Оставьте свой email, чтобы первыми узнать об открытии галереи.',
+                collection_title: 'Коллекция',
+                collection_label: 'Коллекция',
                 modal_title: 'Coming Soon',
                 modal_text: 'Новая коллекция <span class="highlight">Gilded Anatomy</span> уже на подходе. Оставьте свой email, чтобы первыми узнать о запуске и получить доступ к закрытому предпросмотру.',
                 modal_btn: 'Подписаться',
                 footer_copy: '&copy; 2026 Gilded Anatomy. Все права защищены.',
                 footer_extra: 'Создано с уважением к форме и движению.',
-                email_placeholder: 'Ваш email',
-                // ... существующие ключи ...
-                coming_soon_label: 'Скоро'
+                email_placeholder: 'Ваш email'
             },
             es: {
-                nav_philosophy: 'Filosofía',
+                nav_about: 'Sobre el autor',
+                nav_collection: 'Colección',
                 nav_gallery: 'Galería',
                 nav_coming: 'Coming Soon',
                 hero_title: 'Gilded <em>Anatomy</em>',
                 hero_subtitle: 'El arte no pertenece solo a las galerías. Pertenece al movimiento. A la vida cotidiana. Al cuerpo.',
                 hero_cta: 'Ver colección',
-                phil_1: 'Gilded Anatomy nació de una convicción simple: <span class="highlight">el arte no pertenece solo a las galerías.</span> Pertenece al movimiento. A la vida cotidiana. Al cuerpo.',
-                phil_2: 'Con un enfoque multidisciplinario, Gilded Anatomy se nutre de la práctica escultórica, la exploración de materiales y un profundo respeto por la forma. Cada pieza es una extensión de la expresión artística, diseñada no solo para llevarse, sino para transformar a quien la porta en una <span class="highlight">obra de arte viva.</span>',
-                phil_3: 'Vemos la moda como algo más que adorno. Es un medio. Una declaración. Una forma de encarnar identidad, emoción e historia.',
-                phil_4: '¿Por qué observar el arte desde la distancia cuando puedes <span class="highlight">habitarlo?</span> Gilded Anatomy existe para disolver esa frontera, acercar el arte, hacerlo tangible y permitirle moverse libremente por el mundo.',
-                phil_5: '<span class="highlight">Esto no es solo algo que llevas. Es algo en lo que te conviertes.</span>',
-                gallery_title: 'Colección',
+                about_title: 'Sobre el autor',
+                                about_p1: 'Nacida en 1984 en Siberia, URSS, <span class="highlight">Svetlana Bardakova</span> es una artista contemporánea y escultora cuyo viaje creativo abarca continentes, culturas y disciplinas artísticas.',
+                about_p2: 'Habiendo vivido y trabajado en Rusia, Indonesia, Argentina, Bolivia, Chile, Taiwán, Inglaterra y España, su práctica se ha visto moldeada por una rica y diversa gama de experiencias culturales, ampliando su perspectiva y lenguaje artísticos.',
+                about_p3: 'Ha organizado y participado en exposiciones internacionales de arte y escultura en Moscú, Ubud, Buenos Aires, Málaga y Marbella. Sus obras están representadas en galerías líderes y colecciones privadas de todo el mundo, incluidos Dubái, París, Londres, Moscú, Saint Paul de Vence, Madrid, Marbella y Miami.',
+                about_p4: 'Trabajando con técnicas mixtas, Svetlana explora un amplio espectro de materiales — desde papel y crayones hasta yeso, metal y vidrio. Buscando constantemente nuevos materiales y formas de expresión, aborda su práctica con una mentalidad experimental, abrazando la libertad de ir más allá de los límites convencionales entre materiales, disciplinas y formas artísticas.',
+                about_p5: 'A través del vaciado y la construcción escultórica, su práctica también se extiende al <span class="highlight">arte vestible</span>, explorando el diálogo entre la escultura, el cuerpo humano y la moda. Su visión va más allá de los espacios de galería tradicionales, hacia creaciones escultóricas que pueden habitar nuevos contextos — desde instalaciones artísticas y exposiciones hasta alta costura, apariciones en alfombras rojas y grandes eventos culturales.',
+                about_p6: 'Para Gilded Anatomy, el arte es un proceso continuo de traducir una visión interior en forma tangible, permitiendo que la creatividad fluya libremente entre materiales, espacios y experiencias de vida.',
+                gallery_title: 'Galería',
+                gallery_p1: 'La galería completa de Gilded Anatomy está en preparación. Una selección curada de imágenes editoriales, estudios escultóricos y momentos detrás de escena estará disponible pronto.',
+                gallery_coming: 'Próximamente',
+                gallery_p2: 'Deja tu email para ser el primero en saber cuándo se abre la galería.',
+                collection_title: 'Colección',
+                collection_label: 'Colección',
                 modal_title: 'Coming Soon',
                 modal_text: 'La nueva colección de <span class="highlight">Gilded Anatomy</span> está en camino. Deja tu email para ser el primero en saber del lanzamiento y acceder a una vista previa privada.',
                 modal_btn: 'Suscribirse',
                 footer_copy: '&copy; 2026 Gilded Anatomy. Todos los derechos reservados.',
                 footer_extra: 'Creado con respeto por la forma y el movimiento.',
-                email_placeholder: 'Tu email',
-                // ... существующие ключи ...
-                coming_soon_label: 'Próximamente'
+                email_placeholder: 'Tu email'
             }
         };
 
@@ -709,14 +873,11 @@
                     el.innerHTML = t[key];
                 }
             });
-            // Placeholder для email
             const emailInput = document.getElementById('emailInput');
             if (emailInput) emailInput.placeholder = t.email_placeholder;
-            // Обновляем активную кнопку
             document.querySelectorAll('.lang-switcher button').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.lang === lang);
             });
-            // Меняем lang у html
             document.documentElement.lang = lang;
         }
 
@@ -724,28 +885,24 @@
            ИНИЦИАЛИЗАЦИЯ
            ========================= */
         document.addEventListener('DOMContentLoaded', () => {
-            renderGallery();
+            renderCollection();
 
-            const comingSoonBtn = document.getElementById('comingSoonBtn');
+            const comingSoonBtn = document.getElementById('comingSoonBtn'); // может быть null
             const banner = document.getElementById('comingSoonBanner');
             const closeBtn = document.getElementById('closeBanner');
             const subscribeForm = document.getElementById('subscribeForm');
             const bannerImage = document.getElementById('bannerImage');
-                        // ============================================
-            // МОБИЛЬНОЕ МЕНЮ
-            // ============================================
+
+            // Мобильное меню
             const burger = document.querySelector('.burger');
             const mobileMenu = document.getElementById('mobileMenu');
             const mobileMenuBackdrop = document.getElementById('mobileMenuBackdrop');
             const comingSoonBtnMobile = document.getElementById('comingSoonBtnMobile');
 
-            // Проверка: если блока нет в HTML — предупреждаем в консоли
-            if (!mobileMenu) {
-                console.warn('⚠️ #mobileMenu не найден в HTML. Добавьте блок .mobile-menu после </header>.');
-            }
-            if (!mobileMenuBackdrop) {
-                console.warn('⚠️ #mobileMenuBackdrop не найден в HTML.');
-            }
+            // Лайтбокс
+            const lightbox = document.getElementById('lightbox');
+            const lightboxClose = document.getElementById('lightboxClose');
+            const lightboxImg = document.getElementById('lightboxImg');
 
             function openMobileMenu() {
                 if (!mobileMenu) return;
@@ -753,7 +910,6 @@
                 mobileMenuBackdrop?.classList.add('active');
                 burger.classList.add('active');
                 document.body.style.overflow = 'hidden';
-                console.log('✅ Меню открыто, классы:', mobileMenu.className);
             }
 
             function closeMobileMenu() {
@@ -761,10 +917,9 @@
                 mobileMenu.classList.remove('open');
                 mobileMenuBackdrop?.classList.remove('active');
                 burger.classList.remove('active');
-                if (!banner.classList.contains('active')) {
+                if (!banner.classList.contains('active') && !lightbox.classList.contains('active')) {
                     document.body.style.overflow = '';
                 }
-                console.log('✅ Меню закрыто, классы:', mobileMenu.className);
             }
 
             if (burger && mobileMenu) {
@@ -780,53 +935,60 @@
 
             mobileMenuBackdrop?.addEventListener('click', closeMobileMenu);
 
-            // Закрытие по ссылкам
             mobileMenu?.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', closeMobileMenu);
             });
 
-            // Coming Soon в мобильном меню
             comingSoonBtnMobile?.addEventListener('click', (e) => {
                 e.preventDefault();
                 closeMobileMenu();
                 setTimeout(() => openBanner(null), 350);
             });
 
-            // Переключатели языков в мобильном меню
             mobileMenu?.querySelectorAll('.lang-switcher button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     applyLanguage(btn.dataset.lang);
                 });
             });
+
             bannerImage.addEventListener('error', () => {
                 bannerImage.style.opacity = '0.3';
                 bannerImage.alt = 'Image not found';
             });
 
-            // Кнопка в шапке — открывает модалку с дефолтной картинкой
-            comingSoonBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                openBanner(null);
-            });
+            // Кнопка Coming Soon в шапке (может отсутствовать)
+            if (comingSoonBtn) {
+                comingSoonBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openBanner(null);
+                });
+            }
 
-            // Крестик — закрывает
             closeBtn.addEventListener('click', closeBanner);
 
-            // Клик по фону — закрывает
             banner.addEventListener('click', (e) => {
                 if (e.target === banner) closeBanner();
             });
 
-            // Escape — закрывает
+            // Лайтбокс — закрытие
+            lightboxClose.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+            lightboxImg.addEventListener('click', closeLightbox);
+
+            // Escape — приоритет: лайтбокс → баннер → мобильное меню
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && banner.classList.contains('active')) closeBanner();
-                if (e.key === 'Escape') {
-                    if (banner.classList.contains('active')) closeBanner();
-                    if (mobileMenu.classList.contains('open')) closeMobileMenu();
+                if (e.key !== 'Escape') return;
+                if (lightbox.classList.contains('active')) {
+                    closeLightbox();
+                } else if (banner.classList.contains('active')) {
+                    closeBanner();
+                } else if (mobileMenu && mobileMenu.classList.contains('open')) {
+                    closeMobileMenu();
                 }
             });
 
-            // Форма подписки — без изменений
             subscribeForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const input = subscribeForm.querySelector('input');
@@ -850,14 +1012,12 @@
                 }
             });
 
-            // Переключатель языков
             document.querySelectorAll('.lang-switcher button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     applyLanguage(btn.dataset.lang);
                 });
             });
 
-            // Плавный скролл
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     const href = this.getAttribute('href');
@@ -869,8 +1029,12 @@
                 });
             });
 
-            // Применяем язык по умолчанию
             applyLanguage('en');
+
+            // Автопоказ баннера Coming Soon при загрузке
+            setTimeout(() => {
+                openBanner(null);
+            }, 1500);
         });
     </script>
 </body>
